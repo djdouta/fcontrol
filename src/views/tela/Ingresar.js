@@ -29,19 +29,6 @@ function Impresar() {
         mostrar: true,
         telaImagen: no_file,
         factura: no_factura
-      },
-      {
-        color: "Verde",
-        tipo: "vengalina",
-        descripcion: "Descripcion 2",
-        textilera: "Textilera 2",
-        metros: "300",
-        rollos: "50",
-        codigo: "asd232",
-        estampado: true,
-        mostrar: true,
-        telaImagen: no_file,
-        factura: no_factura
       }
     ]
   });
@@ -131,12 +118,14 @@ function Impresar() {
           color: "",
           tipo: inputs.datos[inputs.datos.length - 1].tipo,
           descripcion: inputs.datos[inputs.datos.length - 1].descripcion,
+          textilera: inputs.datos[inputs.datos.length - 1].textilera,
           metros: "",
           rollos: "",
           codigo: "",
           estampado: inputs.datos[inputs.datos.length - 1].estampado,
           mostrar: true,
-          telaImagen: no_file
+          telaImagen: no_file,
+          factura: no_factura
         }
       ]
     };
@@ -207,27 +196,28 @@ function Impresar() {
     parseado = JSON.stringify(inputs);
     formData.append("data", parseado);
     axios.post("/tela", formData, config).then(res => {
-      setInputs({
-        fecha: "",
-        fecha_remito: "",
-        remito: "",
-        textilera: "",
-        datos: [
-          {
-            color: "",
-            tipo: "",
-            descripcion: "",
-            textilera: "",
-            metros: "",
-            rollos: "",
-            codigo: "",
-            estampado: false,
-            mostrar: true,
-            telaImagen: no_file,
-            factura: no_factura
-          }
-        ]
-      });
+      console.log(res);
+      // setInputs({
+      //   fecha: "",
+      //   fecha_remito: "",
+      //   remito: "",
+      //   textilera: "",
+      //   datos: [
+      //     {
+      //       color: "",
+      //       tipo: "",
+      //       descripcion: "",
+      //       textilera: "",
+      //       metros: "",
+      //       rollos: "",
+      //       codigo: "",
+      //       estampado: false,
+      //       mostrar: true,
+      //       telaImagen: no_file,
+      //       factura: no_factura
+      //     }
+      //   ]
+      // });
     });
   };
   return (

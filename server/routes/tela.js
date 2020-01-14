@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const router = Router();
 const multer = require("multer");
+const tela_controller = require("../controllers/tela_controller");
 
 //Settings
 const storage = multer.diskStorage({
@@ -19,14 +20,10 @@ const storage = multer.diskStorage({
     }
   }
 });
-
 const upload = multer({ storage: storage });
 
 //Rutas
-router.get("/tela", (req, res) => {
-  // console.log(req.body);
-  res.json({ hola: "mundo" });
-});
+router.get("/tela", tela_controller.showTela);
 
 router.post(
   "/tela",
@@ -46,10 +43,7 @@ router.post(
       ...newData,
       datos
     };
-
-    console.log(tela);
-
-    res.json({ hola: "funciono" });
+    tela_controller.addTela(req, res, tela);
   }
 );
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import {
   Col,
@@ -10,6 +10,7 @@ import {
   DropdownItem
 } from "shards-react";
 import "../../assets/tela-stock.css";
+import axios from "axios";
 
 export default function Stock(props) {
   const [data] = useState([

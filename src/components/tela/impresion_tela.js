@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image
 } from "@react-pdf/renderer";
+import moment from "moment";
 
 const styles = StyleSheet.create({
   title: {
@@ -76,7 +77,6 @@ const styles = StyleSheet.create({
   }
 });
 export function PdfDocument(props) {
-  console.log(props);
   return (
     <Document>
       <Page size="A4">
@@ -86,12 +86,16 @@ export function PdfDocument(props) {
               <Text style={styles.tituloTexteliera}>
                 {props.inputs.textilera}
               </Text>
-              <Text style={styles.fecha}>{`Fecha: ${props.inputs.fecha}`}</Text>
+              <Text style={styles.fecha}>{`Fecha: ${moment(
+                props.inputs.fecha
+              ).format("DD/MM/YY")}`}</Text>
             </View>
             <View style={styles.remitoContainer}>
               <Text style={styles.tituloTexteliera}>{props.inputs.remito}</Text>
               <Text style={styles.fecha}>
-                {`Remio Fecha: ${props.inputs.fecha_remito}`}
+                {`Remio Fecha: ${moment(props.inputs.fecha_remito).format(
+                  "DD/MM/YY"
+                )}`}
               </Text>
             </View>
           </View>
@@ -104,9 +108,9 @@ export function PdfDocument(props) {
                 <Text style={[styles.datos, styles.eliminarBordeArriba]}>
                   {`Cantidad de rollos: ${dato.rollos}`}
                 </Text>
-                <Text style={styles.datos}>{`Metros totales: ${
-                  dato.metros
-                }`}</Text>
+                <Text
+                  style={styles.datos}
+                >{`Metros totales: ${dato.metros}`}</Text>
                 <Text style={styles.datos}>{`Codigo : ${dato.codigo}`} </Text>
                 <Text style={styles.datos}>
                   {`Estampado: ${dato.estampado === true ? "Si" : "No"}`}
@@ -119,7 +123,10 @@ export function PdfDocument(props) {
                   style={[styles.datos, styles.bordeAbajo]}
                 >{`Descripcion: ${dato.descripcion}`}</Text>
               </View>
-              <Image style={styles.image} source={dato.imagen} />
+              <Image
+                style={styles.image}
+                source={`/uploads/telas//${dato.telaImagen}`}
+              />
             </View>
           ))}
         </View>

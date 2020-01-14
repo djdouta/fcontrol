@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import MaterialTable from "material-table";
 import {
   Col,
@@ -12,115 +12,38 @@ import {
 import "../../assets/components/ImprimirRemito.css";
 import { PdfDocument } from "../../components/tela/impresion_tela";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import axios from "axios";
 
 export default function Stock(props) {
   const [pdf, setPdf] = useState(null);
-  const [pdfShow, setPdfShow] = useState(true);
-  const [data, setData] = useState([
-    {
-      fecha: "15/02/2009",
-      fecha_remito: "20/02/2009",
-      remito: "20654",
-      textilera: "Sin titulo",
-      datos: [
-        {
-          color: "Rojo",
-          tipo: "vengalina",
-          descripcion: ` Totally words widow one downs few age every 
-          seven if miss part by fact`,
-          metros: "30",
-          rollos: "5",
-          metros_restantes: "15",
-          rollos_restantes: "2",
-          codigo: "415015521",
-          estampado: false,
-          mostrar: true,
-          temporada: "invierno",
-          imagen: "/uploads/telas/tela1578594459263.jpg"
-        },
-        {
-          color: "Azul",
-          tipo: "vengalina",
-          descripcion: "Descripcion 2",
-          metros: "300",
-          rollos: "50",
-          codigo: "asd232",
-          estampado: true,
-          mostrar: true,
-          temporada: "invierno",
-          imagen: "/uploads/telas/tela1578594459263.jpg"
-        }
-      ]
-    },
-    {
-      fecha: "20/02/2009",
-      fecha_remito: "20/02/2009",
-      remito: "20654",
-      textilera: "Sin titulo",
-      datos: [
-        {
-          color: "Verde",
-          tipo: "vengalina",
-          descripcion: "Descripcion",
-          metros: "30",
-          rollos: "5",
-          metros_restantes: "15",
-          rollos_restantes: "2",
-          codigo: "415015521",
-          estampado: false,
-          mostrar: true,
-          temporada: "verano",
-          imagen:
-            "https://image.freepik.com/foto-gratis/textura-tela-verde_23-2147729348.jpg"
-        },
-        {
-          color: "Amarillo",
-          tipo: "vengalina",
-          descripcion: "Descripcion 2",
-          metros: "300",
-          rollos: "50",
-          codigo: "asd232",
-          estampado: true,
-          mostrar: true,
-          temporada: "verano",
-          imagen:
-            "https://static8.depositphotos.com/1315253/862/i/950/depositphotos_8624066-stock-photo-yellow-fabric-texture.jpg"
-        },
-        {
-          color: "Amarillo",
-          tipo: "vengalina",
-          descripcion: "Descripcion 2",
-          metros: "300",
-          rollos: "50",
-          codigo: "asd232",
-          estampado: true,
-          mostrar: true,
-          temporada: "verano",
-          imagen:
-            "https://image.freepik.com/foto-gratis/textura-tela-morada_23-2147729350.jpg"
-        }
-      ]
-    }
-  ]);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios("/tela");
+      setData(result.data);
+    };
+    fetchData();
+  }, []);
+
   const showPDF = e => {
-    let newPdf =
-      pdfShow === true ? (
-        <PDFDownloadLink
-          document={<PdfDocument inputs={data[e.target.dataset.idtable]} />}
-          fileName="ingresoTela.pdf"
-          style={{
-            border: "1px solid #006fe6",
-            padding: "10px"
-          }}
-        >
-          {({ blob, url, loading, error }) => {
-            return loading ? "Cargando..." : "Descargar reporte";
-          }}
-        </PDFDownloadLink>
-      ) : (
-        <div>generar pdf</div>
-      );
-    setPdfShow(!pdfShow);
+    let newPdf = (
+      <PDFDownloadLink
+        document={<PdfDocument inputs={data[e.target.dataset.idtable]} />}
+        fileName="ingresoTela.pdf"
+        style={{
+          fontSize: "32px"
+        }}
+      >
+        {({ blob, url, loading, error }) => {
+          return loading ? (
+            "Cargando..."
+          ) : (
+            <i className="material-icons">print</i>
+          );
+        }}
+      </PDFDownloadLink>
+    );
     setPdf(newPdf);
   };
 
@@ -160,33 +83,33 @@ export default function Stock(props) {
           {
             title: "Fecha",
             field: "fecha",
-            type: "date",
-            editComponent: props => (
-              <div className="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl">
-                <input
-                  className="MuiInputBase-input MuiInput-input"
-                  type="date"
-                  value={props.value}
-                  onChange={e => props.onChange(e.target.value)}
-                />
-              </div>
-            )
+            type: "date"
+            // editComponent: props => (
+            //   <div className="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl">
+            //     <input
+            //       className="MuiInputBase-input MuiInput-input"
+            //       type="date"
+            //       value={props.value}
+            //       onChange={e => props.onChange(e.target.value)}
+            //     />
+            //   </div>
+            // )
           },
           { title: "Textilera", field: "textilera" },
           {
             title: "Fecha Remito",
             field: "fecha_remito",
-            type: "date",
-            editComponent: props => (
-              <div className="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl">
-                <input
-                  className="MuiInputBase-input MuiInput-input"
-                  type="date"
-                  value={props.value}
-                  onChange={e => props.onChange(e.target.value)}
-                />
-              </div>
-            )
+            type: "date"
+            // editComponent: props => (
+            //   <div className="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl">
+            //     <input
+            //       className="MuiInputBase-input MuiInput-input"
+            //       type="date"
+            //       value={props.value}
+            //       onChange={e => props.onChange(e.target.value)}
+            //     />
+            //   </div>
+            // )
           },
           { title: "Remito", field: "remito" },
           {
@@ -201,7 +124,7 @@ export default function Stock(props) {
                       <img
                         alt="Detalle remito"
                         key={index}
-                        src={dato.imagen}
+                        src={`/uploads/telas/${dato.telaImagen}`}
                         className="ImprimirRemitoDetalleGridImagen"
                         style={{ width: 80 / cant }}
                       />
@@ -213,7 +136,7 @@ export default function Stock(props) {
           }
         ]}
         data={data}
-        title=" "
+        title={pdf}
         editable={{
           onRowDelete: oldData =>
             new Promise((resolve, reject) => {
@@ -232,7 +155,6 @@ export default function Stock(props) {
           {
             tooltip: "Mostrar mas",
             render: rowData => {
-              console.log(rowData);
               return (
                 <Fragment>
                   {rowData.datos.map((data, index) => (
@@ -245,7 +167,7 @@ export default function Stock(props) {
                           <div
                             className="card-post__image"
                             style={{
-                              backgroundImage: `url(${data.imagen})`
+                              backgroundImage: `url(/uploads/telas/${data.telaImagen})`
                             }}
                           >
                             <Badge
@@ -254,17 +176,6 @@ export default function Stock(props) {
                             >
                               {data.color}
                             </Badge>
-                            {/* <div className="card-post__author d-flex">
-                          <a
-                            href="#"
-                            className="card-post__author-avatar card-post__author-avatar--small"
-                            style={{
-                              backgroundImage: `url('${post.authorAvatar}')`
-                            }}
-                          >
-                            Written by Anna Ken
-                          </a>
-                        </div> */}
                           </div>
                           <CardBody>
                             <h5 className="card-title text-fiord-blue">
@@ -299,7 +210,6 @@ export default function Stock(props) {
                     >
                       Generar Pdf
                     </Button>
-                    {pdf}
                   </span>
                 </Fragment>
               );
