@@ -1,0 +1,43 @@
+.ImprimirRemitoDetalle {
+  font-size: 100;
+  text-align: "center";
+  background-color: "white";
+}
+.ImprimirRemitoDetalleGrid {
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 5vw);
+  grid-gap: 15px;
+}
+.ImprimirRemitoDetalleGridImagen {
+  height: 40px;
+}
+.ImprimirRemitoDetalleCard {
+  margin: 10px 15px 0px 15px;
+}
+.ImprimirRemitoEstampado {
+  display: flex;
+}
+.ImprimirRemitoDetalleParrafoMargin {
+  margin-bottom: 0.5px;
+}
+.ImprimirRemitoEstampadoLabel {
+  padding: 5px 5px 5px 0;
+}
+.custom-toggle
+  .custom-control-input:checked:disabled
+  ~ .custom-control-label::before {
+  background: #17c671 !important;
+  border-color: #17c671 !important;
+}
+.custom-toggle
+  .custom-control-input:checked:disabled
+  ~ .custom-control-label::after {
+  background: #e1e5eb !important;
+}
+.custom-control-input:disabled ~ .custom-control-label::before {
+  background: #c61717 !important;
+  border-color: #c61717 !important;
+}
+.custom-toggle .custom-control-label::after {
+  background: #e1e5eb !important;
+}

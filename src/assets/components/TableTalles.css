@@ -1,0 +1,36 @@
+.TableTalles {
+  width: 50%;
+  margin-top: 10px;
+  margin: auto;
+}
+.TableTalles > tbody tr td {
+  margin: 4px;
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+}
+.TableTalles > tbody tr td button {
+  border: 1px solid #007bff;
+  border-radius: 50%;
+  padding: 5px 15px 5px 15px;
+  background-color: white;
+}
+.TableTalles > tbody tr {
+  display: flex;
+}
+.TableTallesActive {
+  background-color: #007bff !important;
+  color: white;
+}
+.modificador {
+  bottom: -25px;
+}
+.BotonTalleUnico {
+  /* width: 50% !important; */
+  border: 1px solid #007bff;
+  border-radius: 50px;
+  padding: 5px 50px 5px 50px;
+  margin-top: 15px;
+  background: white;
+}

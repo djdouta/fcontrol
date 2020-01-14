@@ -1,0 +1,48 @@
+* {
+  box-sizing: content-box;
+}
+.image-upload > input {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.FormValidationImg {
+  height: 200px;
+  width: 200px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+.FormValidationIngresarDerecha {
+  float: right;
+}
+.FormValidationIngresarIzquierda {
+  float: left;
+}
+.FormValidationIngresarDerecha button,
+.FormValidationIngresarIzquierda button {
+  margin: 10px;
+}
+.FormValidation {
+  display: flex;
+}
+.FormValidationMenu {
+  text-align: right;
+  width: 100%;
+}
+.FormValidationMenu button {
+  margin: 5px;
+  height: 60%;
+  margin-top: 10px;
+}
+.FormValidationMenu .material-icons {
+  font-size: 15px !important;
+  margin-right: 5px;
+}
+.custom-control-input {
+  width: 100% !important;
+  height: 30px !important;
+  z-index: 2 !important;
+}
+.custom-control-label {
+  z-index: -1 !important;
+}

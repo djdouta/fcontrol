@@ -1,0 +1,14 @@
+.CenterText {
+  text-align: center;
+}
+.botonIcons {
+  width: 100%;
+  height: 50%;
+  padding: 0;
+}
+.botonIcons > .material-icons {
+  font-size: 20px;
+}
+.PeddingIcon {
+  padding: 5px;
+}
