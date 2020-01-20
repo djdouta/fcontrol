@@ -19,6 +19,7 @@ export default function TableTalles(props) {
                 data-valor={props.talles.uno.valor}
                 data-activo={props.talles.uno.activo}
                 data-index={props.index}
+                disabled={props.readOnly}
               >
                 {props.talles.uno.valor}
               </button>
@@ -35,6 +36,7 @@ export default function TableTalles(props) {
                 data-valor={props.talles.dos.valor}
                 data-activo={props.talles.dos.activo}
                 data-index={props.index}
+                disabled={props.readOnly}
               >
                 {props.talles.dos.valor}
               </button>
@@ -51,6 +53,7 @@ export default function TableTalles(props) {
                 data-valor={props.talles.tres.valor}
                 data-activo={props.talles.tres.activo}
                 data-index={props.index}
+                disabled={props.readOnly}
               >
                 {props.talles.tres.valor}
               </button>
@@ -69,6 +72,7 @@ export default function TableTalles(props) {
                 data-valor={props.talles.cuatro.valor}
                 data-activo={props.talles.cuatro.activo}
                 data-index={props.index}
+                disabled={props.readOnly}
               >
                 {props.talles.cuatro.valor}
               </button>
@@ -85,6 +89,7 @@ export default function TableTalles(props) {
                 data-talle="cinco"
                 data-valor={props.talles.cinco.valor}
                 data-activo={props.talles.cinco.activo}
+                disabled={props.readOnly}
               >
                 {props.talles.cinco.valor}
               </button>
@@ -101,6 +106,7 @@ export default function TableTalles(props) {
                 data-talle="seis"
                 data-valor={props.talles.seis.valor}
                 data-activo={props.talles.seis.activo}
+                disabled={props.readOnly}
               >
                 {props.talles.seis.valor}
               </button>
@@ -120,6 +126,7 @@ export default function TableTalles(props) {
           data-valor={props.talles.unico.valor}
           data-activo={props.talles.unico.activo}
           data-index={props.index}
+          disabled={props.readOnly}
         >
           {props.talles.unico.valor}
         </button>

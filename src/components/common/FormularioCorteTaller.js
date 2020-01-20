@@ -10,7 +10,7 @@ import {
   ListGroup,
   Card
 } from "shards-react";
-import TableTalles from "../common/TableTalles";
+import TableTalles from "./TableTalles";
 import Encimado from "./Encimado";
 
 export default function Corte(props) {
@@ -40,10 +40,23 @@ export default function Corte(props) {
                         <FormInput
                           value={props.tizada.articulo}
                           placeholder="Articulo"
-                          name="articuo"
+                          name="articulo"
                           required
-                          invalid={props.tizada.articulo === "" ? true : false}
-                          valid={props.tizada.articulo === "" ? false : true}
+                          invalid={
+                            props.readOnly === true
+                              ? null
+                              : props.tizada.articulo === ""
+                              ? true
+                              : false
+                          }
+                          valid={
+                            props.readOnly === true
+                              ? null
+                              : props.tizada.articulo === ""
+                              ? false
+                              : true
+                          }
+                          readOnly={props.readOnly}
                           onChange={props.handleTizada}
                           data-index={props.index}
                         />
@@ -56,8 +69,21 @@ export default function Corte(props) {
                           placeholder="Modelo"
                           name="modelo"
                           required
-                          invalid={props.tizada.modelo === "" ? true : false}
-                          valid={props.tizada.modelo === "" ? false : true}
+                          invalid={
+                            props.readOnly === true
+                              ? null
+                              : props.tizada.modelo === ""
+                              ? true
+                              : false
+                          }
+                          valid={
+                            props.readOnly === true
+                              ? null
+                              : props.tizada.modelo === ""
+                              ? false
+                              : true
+                          }
+                          readOnly={props.readOnly}
                           onChange={props.handleTizada}
                           data-index={props.index}
                         />
@@ -71,9 +97,20 @@ export default function Corte(props) {
                           name="referencia"
                           required
                           invalid={
-                            props.tizada.referencia === "" ? true : false
+                            props.readOnly === true
+                              ? null
+                              : props.tizada.referencia === ""
+                              ? true
+                              : false
                           }
-                          valid={props.tizada.referencia === "" ? false : true}
+                          valid={
+                            props.readOnly === true
+                              ? null
+                              : props.tizada.referencia === ""
+                              ? false
+                              : true
+                          }
+                          readOnly={props.readOnly}
                           onChange={props.handleTizada}
                           data-index={props.index}
                         />
@@ -88,8 +125,21 @@ export default function Corte(props) {
                           placeholder="Largo"
                           name="largo"
                           required
-                          invalid={props.tizada.largo === "" ? true : false}
-                          valid={props.tizada.largo === "" ? false : true}
+                          invalid={
+                            props.readOnly === true
+                              ? null
+                              : props.tizada.largo === ""
+                              ? true
+                              : false
+                          }
+                          valid={
+                            props.readOnly === true
+                              ? null
+                              : props.tizada.largo === ""
+                              ? false
+                              : true
+                          }
+                          readOnly={props.readOnly}
                           onChange={props.handleTizada}
                           data-index={props.index}
                         />
@@ -104,23 +154,38 @@ export default function Corte(props) {
                           placeholder="Ancho"
                           name="ancho"
                           required
-                          invalid={props.tizada.ancho === "" ? true : false}
-                          valid={props.tizada.ancho === "" ? false : true}
+                          invalid={
+                            props.readOnly === true
+                              ? null
+                              : props.tizada.ancho === ""
+                              ? true
+                              : false
+                          }
+                          valid={
+                            props.readOnly === true
+                              ? null
+                              : props.tizada.ancho === ""
+                              ? false
+                              : true
+                          }
+                          readOnly={props.readOnly}
                           onChange={props.handleTizada}
                           data-index={props.index}
                         />
                         <FormFeedback>Complete</FormFeedback>
                       </Col>
-                      <Col md="1" className="form-group">
-                        <label>Agregar </label>
-                        <Button
-                          onClick={props.handleAddEncimado}
-                          className="botonIcons"
-                          data-index={props.index}
-                        >
-                          <i className="material-icons">add</i>
-                        </Button>
-                      </Col>
+                      {props.readOnly === true ? null : (
+                        <Col md="1" className="form-group">
+                          <label>Agregar </label>
+                          <Button
+                            onClick={props.handleAddEncimado}
+                            className="botonIcons"
+                            data-index={props.index}
+                          >
+                            <i className="material-icons">add</i>
+                          </Button>
+                        </Col>
+                      )}
                     </Row>
                     {props.tizada.encimados.map((e, i) => (
                       <Encimado
@@ -128,18 +193,21 @@ export default function Corte(props) {
                         index={props.index}
                         encimadoIndex={i}
                         encimado={e}
-                        hadleEncimado={props.hadleEncimado}
+                        handleEncimado={props.handleEncimado}
                         handleDeleteEncimado={props.handleDeleteEncimado}
+                        readOnly={props.readOnly}
+                        original={props.original}
                       />
                     ))}
-                    <Button
-                      onClick={props.handleDeleteTizada}
-                      data-index={props.index}
-                    >
-                      Eliminar tizada
-                    </Button>
+                    {props.readOnly === true || props.index === 0 ? null : (
+                      <Button
+                        onClick={props.handleDeleteTizada}
+                        data-index={props.index}
+                      >
+                        Eliminar tizada
+                      </Button>
+                    )}
                   </Col>
-
                   <Col md="3" className="form-group">
                     <Row form>
                       <Col md="12" className="form-group, CenterText">

@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { Button } from "shards-react";
+import {
+  Button,
+  Col,
+  Card,
+  CardHeader,
+  CardFooter,
+  ListGroup,
+  ListGroupItem,
+  Row,
+  FormInput,
+  FormFeedback
+} from "shards-react";
 import no_file from "../../images/file-manager/no_file.png";
 import no_factura from "../../images/file-manager/no_factura.jpg";
 import "../../assets/components/FromValidation.css";
@@ -7,24 +18,25 @@ import { PdfDocument } from "../../components/tela/impresion_tela";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import FormularioTela from "../../components/tela/formulario_tela";
 import axios from "axios";
+import Autosugerir from "../../components/common/autocompletar";
 
 function Impresar() {
   const [telaImagen, setTelaImagen] = useState([]);
   const [facturaImagen, setFacturaImagen] = useState([]);
   const [inputs, setInputs] = useState({
-    fecha: "2010-08-20",
-    fecha_remito: "2019-08-05",
-    remito: "20654",
-    textilera: "Sin titulo",
+    fecha: "",
+    fecha_remito: "",
+    remito: "",
+    textilera: "",
     datos: [
       {
-        color: "Rojo",
-        tipo: "vengalina",
-        descripcion: "Descripcion",
-        textilera: "Textilera 1",
-        metros: "30",
-        rollos: "5",
-        codigo: "415015521",
+        color: "",
+        tipo: "",
+        descripcion: "",
+        textilera: "",
+        metros: "",
+        rollos: "",
+        codigo: "",
         estampado: false,
         mostrar: true,
         telaImagen: no_file,
@@ -34,6 +46,7 @@ function Impresar() {
   });
   const [pdf, setPdf] = useState(null);
   const [pdfShow, setPdfShow] = useState(true);
+  const [suggestionsTextilera, setSuggestionsTextilera] = useState([]);
 
   const handleChangeData = ({ target }) => {
     const value = target.type === "checkbox" ? target.checked : target.value;
@@ -49,17 +62,7 @@ function Impresar() {
       ...inputs
     });
   };
-  const handleAuto = (event, { newValue }, { index }, { tipo }) => {
-    let datos = inputs.datos[index];
-    datos = {
-      ...datos,
-      [tipo]: newValue
-    };
-    inputs.datos[index] = datos;
-    setInputs({
-      ...inputs
-    });
-  };
+
   const handleChangeInput = ({ target }) => {
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
@@ -132,7 +135,7 @@ function Impresar() {
     setInputs(nuevoInput);
   };
 
-  const handleClikEliminar = e => {
+  const handleShow = e => {
     e.preventDefault();
     const tag = e.target.attributes.getNamedItem("data-tag").value;
     let datos = inputs.datos[tag];
@@ -220,36 +223,164 @@ function Impresar() {
       // });
     });
   };
-  return (
-    <React.Fragment>
-      {inputs.datos.map((data, index) => (
-        <FormularioTela
-          key={index}
-          handleChangeInput={handleChangeInput}
-          handleChangeData={handleChangeData}
-          handleAuto={handleAuto}
-          textilera={inputs.textilera}
-          fecha_remito={inputs.fecha_remito}
-          fecha={inputs.fecha}
-          remito={inputs.remito}
-          index={index}
-          data={data}
-          handleChekbox={handleChekbox}
-          handleClik={handleClikEliminar}
-          handleClick={handleClick}
-          handleChange={handleChange}
-        />
-      ))}
-      <span className="FormValidationIngresarIzquierda">
-        <Button onClick={showPDF}>Generar Pdf</Button>
-        {pdf}
-      </span>
 
-      <span className="FormValidationIngresarDerecha">
-        <Button onClick={addForm}>Ingresar y mantener</Button>
-        <Button onClick={agregarTela}>Ingresar</Button>
-      </span>
-    </React.Fragment>
+  const [textilera] = useState([
+    {
+      name: "Textilera 1"
+    },
+    {
+      name: "Textilera 2"
+    }
+  ]);
+  const onSuggestionsFetchRequestedTexilera = ({ value }) => {
+    console.log(value);
+    let newSuggestion = getSuggestionsTextilera(value);
+    setSuggestionsTextilera(newSuggestion);
+  };
+
+  const onSuggestionsClearRequestedTexilera = () => {
+    setSuggestionsTextilera([]);
+  };
+  const getSuggestionsTextilera = value => {
+    const inputValue = value.trim().toLowerCase();
+    const inputLength = inputValue.length;
+    return inputLength === 0
+      ? []
+      : textilera.filter(
+          lang => lang.name.toLowerCase().slice(0, inputLength) === inputValue
+        );
+  };
+  const handleAuto = (event, { newValue }, { index }, { tipo }) => {
+    if (tipo === "textilera") {
+      setInputs({
+        ...inputs,
+        [tipo]: newValue
+      });
+    } else {
+      let datos = inputs.datos[index];
+      datos = {
+        ...datos,
+        [tipo]: newValue
+      };
+      inputs.datos[index] = datos;
+      setInputs({
+        ...inputs
+      });
+    }
+  };
+
+  const handleDelete = e => {
+    e.preventDefault();
+    const index = e.target.attributes.getNamedItem("data-index").value;
+    let restos = inputs.datos.filter((dato, i) => {
+      return `${i}` !== index;
+    });
+    // console.log(restos);
+    setInputs({ ...inputs, datos: restos });
+  };
+  return (
+    <Col sm="12" md="12" className="FormularioTela">
+      <h1>Ingresar tela</h1>
+      <Card small className="mb-4">
+        <CardHeader className="border-bottom">
+          <Row form>
+            <h5 className="mr-2">Datos generales</h5>
+          </Row>
+          <Row form>
+            <Col md="3" className="form-group">
+              <label>Textilera</label>
+              <Autosugerir
+                handleAuto={handleAuto}
+                value={inputs.textilera}
+                index={0}
+                suggestions={suggestionsTextilera}
+                getSuggestions={getSuggestionsTextilera}
+                onSuggestionsClearRequested={
+                  onSuggestionsClearRequestedTexilera
+                }
+                onSuggestionsFetchRequested={
+                  onSuggestionsFetchRequestedTexilera
+                }
+                name="textilera"
+              />
+            </Col>
+            <Col md="3" className="form-group">
+              <label>Fecha</label>
+              <FormInput
+                value={inputs.fecha}
+                type="date"
+                placeholder="Fecha"
+                name="fecha"
+                required
+                invalid={inputs.fecha === "" ? true : false}
+                valid={inputs.fecha === "" ? false : true}
+                onChange={handleChangeInput}
+              />
+              <FormFeedback>Complete</FormFeedback>
+            </Col>
+            <Col md="3" className="form-group">
+              <label>Remito fecha</label>
+              <FormInput
+                value={inputs.fecha_remito}
+                type="date"
+                placeholder="Fecha remito"
+                name="fecha_remito"
+                required
+                invalid={inputs.fecha_remito === "" ? true : false}
+                valid={inputs.fecha_remito === "" ? false : true}
+                onChange={handleChangeInput}
+              />
+              <FormFeedback>Complete</FormFeedback>
+            </Col>
+            <Col md="3" className="form-group">
+              <label>Remito</label>
+              <FormInput
+                value={inputs.remito}
+                type="text"
+                placeholder="Remito"
+                name="remito"
+                required
+                invalid={inputs.remito === "" ? true : false}
+                valid={inputs.remito === "" ? false : true}
+                onChange={handleChangeInput}
+              />
+              <FormFeedback>Complete</FormFeedback>
+            </Col>
+          </Row>
+        </CardHeader>
+        <ListGroup flush>
+          <ListGroupItem className="px-3">
+            <Row form>
+              {inputs.datos.map((data, index) => (
+                <FormularioTela
+                  key={index}
+                  handleChangeData={handleChangeData}
+                  handleAuto={handleAuto}
+                  index={index}
+                  data={data}
+                  handleChekbox={handleChekbox}
+                  handleShow={handleShow}
+                  handleClick={handleClick}
+                  handleChange={handleChange}
+                  handleDelete={handleDelete}
+                />
+              ))}
+            </Row>
+          </ListGroupItem>
+        </ListGroup>
+        <CardFooter>
+          <span className="FormValidationIngresarIzquierda">
+            <Button onClick={showPDF}>Generar Pdf</Button>
+            {pdf}
+          </span>
+
+          <span className="FormValidationIngresarDerecha">
+            <Button onClick={addForm}>Ingresar y mantener</Button>
+            <Button onClick={agregarTela}>Ingresar</Button>
+          </span>
+        </CardFooter>
+      </Card>
+    </Col>
   );
 }
 export default Impresar;

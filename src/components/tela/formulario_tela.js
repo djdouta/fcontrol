@@ -23,17 +23,8 @@ export default function FormularioTela(props) {
       year: 2012
     }
   ]);
-  const [textilera] = useState([
-    {
-      name: "Textilera 1"
-    },
-    {
-      name: "Textilera 2"
-    }
-  ]);
 
   const [suggestions, setSuggestions] = useState([]);
-  const [suggestionsTextilera, setSuggestionsTextilera] = useState([]);
 
   const getSuggestions = value => {
     const inputValue = value.trim().toLowerCase();
@@ -53,29 +44,11 @@ export default function FormularioTela(props) {
     setSuggestions([]);
   };
 
-  const getSuggestionsTextilera = value => {
-    const inputValue = value.trim().toLowerCase();
-    const inputLength = inputValue.length;
-    return inputLength === 0
-      ? []
-      : textilera.filter(
-          lang => lang.name.toLowerCase().slice(0, inputLength) === inputValue
-        );
-  };
-  const onSuggestionsFetchRequestedTexilera = ({ value }) => {
-    let newSuggestion = getSuggestionsTextilera(value);
-    setSuggestionsTextilera(newSuggestion);
-  };
-
-  const onSuggestionsClearRequestedTexilera = () => {
-    setSuggestionsTextilera([]);
-  };
-
   return (
     <Col sm="12" md="12" className="FormularioTela">
       <Button
         className="FormularioTelaAcivar "
-        onClick={props.handleClik}
+        onClick={props.handleShow}
         data-tag={props.index}
       >
         {props.index + 1}
@@ -84,7 +57,7 @@ export default function FormularioTela(props) {
       {props.data.mostrar && (
         <Form>
           <Row form>
-            <Col md="2" className="form-group">
+            <Col md="3" className="form-group">
               <label>Tipo</label>
               <Autosugerir
                 handleAuto={props.handleAuto}
@@ -111,7 +84,7 @@ export default function FormularioTela(props) {
               />
               <FormFeedback>Complete</FormFeedback>
             </Col>
-            <Col md="3" className="form-group">
+            <Col md="4" className="form-group">
               <label>Descripcion</label>
               <FormInput
                 value={props.data.descripcion}
@@ -125,7 +98,7 @@ export default function FormularioTela(props) {
               />
               <FormFeedback>Complete</FormFeedback>
             </Col>
-            <Col md="2" className="form-group">
+            {/* <Col md="2" className="form-group">
               <label>Textilera</label>
               <Autosugerir
                 handleAuto={props.handleAuto}
@@ -141,19 +114,18 @@ export default function FormularioTela(props) {
                 }
                 name="textilera"
               />
-            </Col>
+            </Col> */}
             <Col md="2" className="form-group">
               <label>Temporada</label>
               <FormSelect
                 data-tag={props.index}
                 onChange={props.handleChangeData}
                 valid
-                name="tipo"
+                name="temporada"
               >
-                <option value="invierno">invierno</option>
-                <option value="verano">verano</option>
+                <option value="invierno">Invierno</option>
+                <option value="verano">Verano</option>
               </FormSelect>
-              <FormFeedback>Please select your state</FormFeedback>
             </Col>
             <Col md="1" className="form-group">
               <label>Estampado</label>
@@ -198,7 +170,7 @@ export default function FormularioTela(props) {
               />
               <FormFeedback>Complete</FormFeedback>
             </Col>
-            <Col md="2" className="form-group">
+            {/* <Col md="2" className="form-group">
               <label>Fecha</label>
               <FormInput
                 value={props.fecha}
@@ -211,8 +183,8 @@ export default function FormularioTela(props) {
                 onChange={props.handleChangeInput}
               />
               <FormFeedback>Complete</FormFeedback>
-            </Col>
-            <Col md="2" className="form-group">
+            </Col> */}
+            {/* <Col md="2" className="form-group">
               <label>Remito fecha</label>
               <FormInput
                 value={props.fecha_remito}
@@ -238,7 +210,7 @@ export default function FormularioTela(props) {
                 onChange={props.handleChangeInput}
               />
               <FormFeedback>Complete</FormFeedback>
-            </Col>
+            </Col> */}
             <Col md="2" className="form-group">
               <label>Codigo</label>
               <FormInput
@@ -253,6 +225,16 @@ export default function FormularioTela(props) {
               />
               <FormFeedback>Complete</FormFeedback>
             </Col>
+            {props.index === 0 ? null : (
+              <Col md="2" className="form-group">
+                <label>Eliminar esta tela</label>
+                <Button data-index={props.index} onClick={props.handleDelete}>
+                  Eliminar
+                </Button>
+                <FormFeedback>Complete</FormFeedback>
+              </Col>
+            )}
+
             <FormGroup className="image-upload col-md-9">
               <input
                 data-tag={props.index}
@@ -261,6 +243,7 @@ export default function FormularioTela(props) {
                 capture="camera"
                 onChange={props.handleChange}
               />
+              <h3>Foto de la tela</h3>
               <img
                 className="FormValidationImg"
                 onClick={props.handleClick}
@@ -278,6 +261,7 @@ export default function FormularioTela(props) {
                 capture="camera"
                 onChange={props.handleChange}
               />
+              <h3>Foto de factura</h3>
               <img
                 className="FormValidationImg"
                 onClick={props.handleClick}

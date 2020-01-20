@@ -78,6 +78,28 @@ export default function() {
         //   icon: '<i class="material-icons">print</i>'
         // }
       ]
+    },
+    {
+      title: "Taller",
+      htmlBefore: '<i class="fas fa-industry"></i>',
+      htmlAfter: '<i class="material-icons">expand_more</i>',
+      links: [
+        {
+          title: "Enviar taller",
+          to: "/enviar-taller",
+          icon: '<i class="material-icons">add</i>'
+        }
+        // {
+        //   title: "Stock de tela",
+        //   to: "/ver-telas",
+        //   icon: '<i class="material-icons">view_module</i>'
+        // },
+        // {
+        //   title: "Imprimir remito",
+        //   to: "/imprimir-remito",
+        //   icon: '<i class="material-icons">print</i>'
+        // }
+      ]
     }
   ];
 }

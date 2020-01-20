@@ -16,7 +16,7 @@ import IngresarTelas from "./views/tela/Ingresar";
 import VerTelas from "./views/tela/Stock";
 import ImprimirRemito from "./views/tela/ImprimirRemito";
 import RealizarCorte from "./views/corte/RealizarCorte";
-
+import EnviarTaller from "./views/taller/enviarTaller";
 export default [
   {
     path: "/",
@@ -79,5 +79,10 @@ export default [
     path: "/realizar-corte",
     layout: DefaultLayout,
     component: RealizarCorte
+  },
+  {
+    path: "/enviar-taller",
+    layout: DefaultLayout,
+    component: EnviarTaller
   }
 ];

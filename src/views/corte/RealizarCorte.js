@@ -8,25 +8,28 @@ import {
   ListGroup,
   CardHeader,
   Card,
-  Button
+  Button,
+  FormSelect
 } from "shards-react";
-import FormularioCorte from "../../components/corte/FormularioCorte";
+import FormularioCorte from "../../components/common/FormularioCorteTaller";
+import axios from "axios";
 
 export default function Corte() {
   const [corte, setCorte] = useState({
-    numero: "12",
-    encimador: "Dan y Yorga",
-    fecha: "20/06/2010",
-    cortador: "Dan",
-    textilera: "ouo",
-    tela: "Morley Finito",
+    numero: "",
+    encimador: "",
+    fecha: "",
+    cortador: "",
+    textilera: "",
+    tela: "",
+    temporada: "invierno",
     tizada: [
       {
-        articulo: "io-015/MF",
-        modelo: "Polera",
-        referencia: "tablas",
-        largo: 1.55,
-        ancho: 1.37,
+        articulo: "",
+        modelo: "",
+        referencia: "",
+        largo: "",
+        ancho: "",
         talles: {
           uno: {
             valor: 1,
@@ -57,54 +60,20 @@ export default function Corte() {
             activo: true
           }
         },
-        encimados: [
-          { color: "coral", cantidad: 20, metros: 40, kilos: 10.5 },
-          { color: "verde", cantidad: 11, metros: 20, kilos: 5.8 }
-        ]
-      },
-      {
-        articulo: "io-015/MF",
-        modelo: "Polera",
-        referencia: "tablas",
-        largo: 1.67,
-        ancho: 1.27,
-        talles: {
-          uno: {
-            valor: 1,
-            activo: true
-          },
-          dos: {
-            valor: 2,
-            activo: true
-          },
-          tres: {
-            valor: 3,
-            activo: true
-          },
-          cuatro: {
-            valor: 4,
-            activo: true
-          },
-          cinco: {
-            valor: 5,
-            activo: true
-          },
-          seis: {
-            valor: 6,
-            activo: true
-          },
-          unico: {
-            valor: "unico",
-            activo: false
-          }
-        },
-        encimados: [
-          { color: "gris", cantidad: 30, metros: 51.6, kilos: 14.7 },
-          { color: "blanco", cantidad: 20, metros: 34.4, kilos: 9.8 }
-        ]
+        encimados: [{ color: "", cantidad: "", metros: "", kilos: "" }]
       }
     ]
   });
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const result = await axios("/corte");
+  //     console.log(result);
+  //     // setCorte(result.data);
+  //   };
+  //   fetchData();
+  // }, []);
+
   const handlePrincipal = e => {
     let name = e.target.name;
     let value = e.target.value;
@@ -168,6 +137,7 @@ export default function Corte() {
     setCorte({ ...corte });
   };
   const handleTalles = e => {
+    e.preventDefault();
     let indexTizada = e.target.dataset.index;
     let valor = e.target.dataset.valor;
     let activo = e.target.dataset.activo;
@@ -239,7 +209,10 @@ export default function Corte() {
       color: "",
       cantidad: "",
       metros: "",
-      kilos: ""
+      kilos: "",
+      cantidad_stock: "",
+      metros_stock: "",
+      kilos_stock: ""
     };
 
     corte.tizada[e.currentTarget.dataset.index] = {
@@ -274,12 +247,17 @@ export default function Corte() {
 
     corte.tizada[index].encimados[encimado] = {
       ...corte.tizada[index].encimados[encimado],
-      [name]: value
+      [name]: value,
+      [`${name}_stock`]: value
     };
-    
     setCorte({ ...corte });
   };
-
+  const registarCorte = () => {
+    axios.post(`/corte`, corte).then(res => {
+      console.log(res);
+      console.log(res.data);
+    });
+  };
   return (
     <Col sm="12" md="12" className="FormularioTela">
       <h1>Realizar corte</h1>
@@ -290,7 +268,7 @@ export default function Corte() {
         <ListGroup flush>
           <ListGroupItem className="px-3">
             <Row form>
-              <Col md="1" className="form-group">
+              <Col md="2" className="form-group">
                 <label>Corte</label>
                 <FormInput
                   type="number"
@@ -318,7 +296,7 @@ export default function Corte() {
                 />
                 <FormFeedback>Complete</FormFeedback>
               </Col>
-              <Col md="2" className="form-group">
+              <Col md="3" className="form-group">
                 <label>Encimador</label>
                 <FormInput
                   value={corte.encimador}
@@ -331,7 +309,7 @@ export default function Corte() {
                 />
                 <FormFeedback>Complete</FormFeedback>
               </Col>
-              <Col md="2" className="form-group">
+              <Col md="3" className="form-group">
                 <label>Cortador</label>
                 <FormInput
                   value={corte.cortador}
@@ -345,6 +323,13 @@ export default function Corte() {
                 <FormFeedback>Complete</FormFeedback>
               </Col>
               <Col md="2" className="form-group">
+                <label>Temporada</label>
+                <FormSelect onChange={handlePrincipal} valid name="temporada">
+                  <option value="invierno">Invierno</option>
+                  <option value="verano">Verano</option>
+                </FormSelect>
+              </Col>
+              <Col md="3" className="form-group">
                 <label>Textilera </label>
                 <FormInput
                   value={corte.textilera}
@@ -357,7 +342,7 @@ export default function Corte() {
                 />
                 <FormFeedback>Complete</FormFeedback>
               </Col>
-              <Col md="2" className="form-group">
+              <Col md="3" className="form-group">
                 <label>Tela</label>
                 <FormInput
                   value={corte.tela}
@@ -389,9 +374,19 @@ export default function Corte() {
             handleAddEncimado={handleAddEncimado}
             handleDeleteEncimado={handleDeleteEncimado}
             handleTizada={handleTizada}
-            hadleEncimado={handleEncimado}
+            handleEncimado={handleEncimado}
           />
         ))}
+        <ListGroup flush>
+          <ListGroupItem className="px-3">
+            <span className="FormValidationIngresarIzquierda">
+              <Button onClick={registarCorte}>Registar corte </Button>
+            </span>
+            <span className="FormValidationIngresarDerecha">
+              <Button>Crear planilla de corte </Button>
+            </span>
+          </ListGroupItem>
+        </ListGroup>
       </Card>
     </Col>
   );

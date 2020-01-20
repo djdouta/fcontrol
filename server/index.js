@@ -16,13 +16,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //routes
-app.get("/", function(req, res) {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
+
 app.use(require("./routes/index"));
 app.use(require("./routes/corte"));
 app.use(require("./routes/tela"));
-
+app.use(require("./routes/taller"));
 //database
 
 const url =
@@ -31,14 +29,13 @@ mongoose
   .connect(url, {
     useUnifiedTopology: true,
     useCreateIndex: true,
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useFindAndModify: false
   })
   .then(() => {
-    // app.listen(3002);
     console.log("database connected!");
   })
   .catch(err => console.log(err));
-// mongoose.connect("paste db link", {useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true });
 
 //starting the server
 app.listen(app.get("port"), () => {
