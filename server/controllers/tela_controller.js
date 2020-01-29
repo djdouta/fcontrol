@@ -10,10 +10,6 @@ exports.addTela = async (req, res, tela) => {
   }
 };
 
-exports.showIndex = (req, res, next) => {
-  res.json({ hola: "funciono" });
-};
-
 exports.showTela = async (req, res, next) => {
   const telas = await Tela.find({});
   try {

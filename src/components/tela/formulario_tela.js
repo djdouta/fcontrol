@@ -12,36 +12,85 @@ import {
 } from "shards-react";
 import "../../assets/formulario_tela.css";
 import Autosugerir from "../common/autocompletar.js";
+import axios from "axios";
 export default function FormularioTela(props) {
-  const [tipo] = useState([
-    {
-      name: "Engomado",
-      year: 1972
-    },
-    {
-      name: "Vengalina",
-      year: 2012
+  const [suggestionsTipo, setSuggestionsTipo] = useState([]);
+  const [suggestionsColor, setSuggestionsColor] = useState([]);
+  const [temporizador, setTemporizador] = useState(null);
+
+  //Busqueda api rest
+  const searchTipo = async code => {
+    const cut = await axios("/tipoTela/find", {
+      params: {
+        nombre: code
+      }
+    });
+
+    return cut;
+  };
+  //Busqueda api rest
+  const searchColor = async code => {
+    const color = await axios("/colorTela/find", {
+      params: {
+        nombre: code
+      }
+    });
+
+    return color;
+  };
+
+  //Autogest tipo
+  const getSuggestionsTipo = async value => {
+    const result = await searchTipo(value);
+    let nuevo = result.data.map(element => {
+      return { name: element.name };
+    });
+    return nuevo;
+  };
+  const onSuggestionsFetchRequestedTipo = async ({ value }) => {
+    if (temporizador !== null) {
+      window.clearTimeout(temporizador);
     }
-  ]);
+    let temporizadorID = window.setTimeout(async () => {
+      let newSuggestion = await getSuggestionsTipo(value);
 
-  const [suggestions, setSuggestions] = useState([]);
-
-  const getSuggestions = value => {
-    const inputValue = value.trim().toLowerCase();
-    const inputLength = inputValue.length;
-    return inputLength === 0
-      ? []
-      : tipo.filter(
-          lang => lang.name.toLowerCase().slice(0, inputLength) === inputValue
-        );
-  };
-  const onSuggestionsFetchRequested = ({ value }) => {
-    let newSuggestion = getSuggestions(value);
-    setSuggestions(newSuggestion);
+      setSuggestionsTipo(newSuggestion);
+    }, 200);
+    setTemporizador(temporizadorID);
   };
 
-  const onSuggestionsClearRequested = () => {
-    setSuggestions([]);
+  const onSuggestionsClearRequestedTipo = () => {
+    setSuggestionsTipo([]);
+  };
+  const getSuggestionValueTipo = suggestion => {
+    return suggestion.name;
+  };
+
+  //Autogest color
+  const getSuggestionsColor = async value => {
+    const result = await searchColor(value);
+    let nuevo = result.data.map(element => {
+      return { name: element.name };
+    });
+    return nuevo;
+  };
+  const onSuggestionsFetchRequestedColor = async ({ value }) => {
+    if (temporizador !== null) {
+      window.clearTimeout(temporizador);
+    }
+    let temporizadorID = window.setTimeout(async () => {
+      let newSuggestion = await getSuggestionsColor(value);
+
+      setSuggestionsColor(newSuggestion);
+    }, 200);
+    setTemporizador(temporizadorID);
+  };
+
+  const onSuggestionsClearRequestedColor = () => {
+    setSuggestionsColor([]);
+  };
+  const getSuggestionValueColor = suggestion => {
+    return suggestion.name;
   };
 
   return (
@@ -63,26 +112,27 @@ export default function FormularioTela(props) {
                 handleAuto={props.handleAuto}
                 value={props.data.tipo}
                 index={props.index}
-                suggestions={suggestions}
-                getSuggestions={getSuggestions}
-                onSuggestionsClearRequested={onSuggestionsClearRequested}
-                onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+                suggestions={suggestionsTipo}
+                getSuggestions={getSuggestionsTipo}
+                getSuggestionValue={getSuggestionValueTipo}
+                onSuggestionsClearRequested={onSuggestionsClearRequestedTipo}
+                onSuggestionsFetchRequested={onSuggestionsFetchRequestedTipo}
                 name="tipo"
               />
             </Col>
             <Col md="2" className="form-group">
               <label>Color</label>
-              <FormInput
+              <Autosugerir
+                handleAuto={props.handleAuto}
                 value={props.data.color}
-                placeholder="Color"
+                index={props.index}
+                suggestions={suggestionsColor}
+                getSuggestions={getSuggestionsColor}
+                getSuggestionValue={getSuggestionValueColor}
+                onSuggestionsClearRequested={onSuggestionsClearRequestedColor}
+                onSuggestionsFetchRequested={onSuggestionsFetchRequestedColor}
                 name="color"
-                required
-                invalid={props.data.color === "" ? true : false}
-                valid={props.data.color === "" ? false : true}
-                onChange={props.handleChangeData}
-                data-tag={props.index}
               />
-              <FormFeedback>Complete</FormFeedback>
             </Col>
             <Col md="4" className="form-group">
               <label>Descripcion</label>
@@ -98,23 +148,7 @@ export default function FormularioTela(props) {
               />
               <FormFeedback>Complete</FormFeedback>
             </Col>
-            {/* <Col md="2" className="form-group">
-              <label>Textilera</label>
-              <Autosugerir
-                handleAuto={props.handleAuto}
-                value={props.data.textilera}
-                index={props.index}
-                suggestions={suggestionsTextilera}
-                getSuggestions={getSuggestionsTextilera}
-                onSuggestionsClearRequested={
-                  onSuggestionsClearRequestedTexilera
-                }
-                onSuggestionsFetchRequested={
-                  onSuggestionsFetchRequestedTexilera
-                }
-                name="textilera"
-              />
-            </Col> */}
+
             <Col md="2" className="form-group">
               <label>Temporada</label>
               <FormSelect
@@ -170,47 +204,7 @@ export default function FormularioTela(props) {
               />
               <FormFeedback>Complete</FormFeedback>
             </Col>
-            {/* <Col md="2" className="form-group">
-              <label>Fecha</label>
-              <FormInput
-                value={props.fecha}
-                type="date"
-                placeholder="Fecha"
-                name="fecha"
-                required
-                invalid={props.fecha === "" ? true : false}
-                valid={props.fecha === "" ? false : true}
-                onChange={props.handleChangeInput}
-              />
-              <FormFeedback>Complete</FormFeedback>
-            </Col> */}
-            {/* <Col md="2" className="form-group">
-              <label>Remito fecha</label>
-              <FormInput
-                value={props.fecha_remito}
-                type="date"
-                placeholder="Fecha"
-                name="fecha_remito"
-                required
-                invalid={props.fecha_remito === "" ? true : false}
-                valid={props.fecha_remito === "" ? false : true}
-                onChange={props.handleChangeInput}
-              />
-              <FormFeedback>Complete</FormFeedback>
-            </Col>
-            <Col md="2" className="form-group">
-              <label>Remito</label>
-              <FormInput
-                value={props.remito}
-                placeholder="Remito"
-                name="remito"
-                required
-                invalid={props.remito === "" ? true : false}
-                valid={props.remito === "" ? false : true}
-                onChange={props.handleChangeInput}
-              />
-              <FormFeedback>Complete</FormFeedback>
-            </Col> */}
+
             <Col md="2" className="form-group">
               <label>Codigo</label>
               <FormInput

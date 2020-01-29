@@ -1,0 +1,13 @@
+.enviarPlancharPDFViewer {
+  width: 80%;
+  height: 500px;
+}
+.enviarPlancharPDFViewerText {
+  color: blue;
+}
+.enviarPlancharPDFViewerCanvas {
+  text-align: center;
+  width: 100%;
+  margin: 51px auto;
+  padding-top: 50px;
+}

@@ -33,7 +33,7 @@ function Impresar() {
         color: "",
         tipo: "",
         descripcion: "",
-        textilera: "",
+        temporada: "invierno",
         metros: "",
         rollos: "",
         codigo: "",
@@ -46,17 +46,37 @@ function Impresar() {
   });
   const [pdf, setPdf] = useState(null);
   const [pdfShow, setPdfShow] = useState(true);
+  const [temporizador, setTemporizador] = useState(null);
   const [suggestionsTextilera, setSuggestionsTextilera] = useState([]);
+
+  //Busqueda api rest
+  const searchTextilera = async code => {
+    const color = await axios("/textileraTela/find", {
+      params: {
+        nombre: code
+      }
+    });
+
+    return color;
+  };
 
   const handleChangeData = ({ target }) => {
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
     const tag = target.attributes.getNamedItem("data-tag").value;
     let datos = inputs.datos[tag];
-    datos = {
-      ...datos,
-      [name]: value
-    };
+    if (name === "metros" || name === "rollos") {
+      datos = {
+        ...datos,
+        [name]: value,
+        [`${name}_stock`]: value
+      };
+    } else {
+      datos = {
+        ...datos,
+        [name]: value
+      };
+    }
     inputs.datos[tag] = datos;
     setInputs({
       ...inputs
@@ -199,57 +219,58 @@ function Impresar() {
     parseado = JSON.stringify(inputs);
     formData.append("data", parseado);
     axios.post("/tela", formData, config).then(res => {
-      console.log(res);
-      // setInputs({
-      //   fecha: "",
-      //   fecha_remito: "",
-      //   remito: "",
-      //   textilera: "",
-      //   datos: [
-      //     {
-      //       color: "",
-      //       tipo: "",
-      //       descripcion: "",
-      //       textilera: "",
-      //       metros: "",
-      //       rollos: "",
-      //       codigo: "",
-      //       estampado: false,
-      //       mostrar: true,
-      //       telaImagen: no_file,
-      //       factura: no_factura
-      //     }
-      //   ]
-      // });
+      setInputs({
+        fecha: "",
+        fecha_remito: "",
+        remito: "",
+        textilera: "",
+        datos: [
+          {
+            color: "",
+            tipo: "",
+            descripcion: "",
+            temporada: "",
+            metros: "",
+            rollos: "",
+            codigo: "",
+            estampado: false,
+            mostrar: true,
+            telaImagen: no_file,
+            factura: no_factura
+          }
+        ]
+      });
     });
   };
 
-  const [textilera] = useState([
-    {
-      name: "Textilera 1"
-    },
-    {
-      name: "Textilera 2"
+  //Autogest
+  const getSuggestionsTextilera = async value => {
+    const result = await searchTextilera(value);
+    let nuevo = result.data.map(element => {
+      return { name: element.name };
+    });
+    return nuevo;
+  };
+  const onSuggestionsFetchRequestedTextilera = async ({ value }) => {
+    if (temporizador !== null) {
+      window.clearTimeout(temporizador);
     }
-  ]);
-  const onSuggestionsFetchRequestedTexilera = ({ value }) => {
-    console.log(value);
-    let newSuggestion = getSuggestionsTextilera(value);
-    setSuggestionsTextilera(newSuggestion);
+    let temporizadorID = window.setTimeout(async () => {
+      let newSuggestion = await getSuggestionsTextilera(value);
+
+      setSuggestionsTextilera(newSuggestion);
+    }, 200);
+    setTemporizador(temporizadorID);
   };
 
-  const onSuggestionsClearRequestedTexilera = () => {
+  const onSuggestionsClearRequestedTextilera = () => {
     setSuggestionsTextilera([]);
   };
-  const getSuggestionsTextilera = value => {
-    const inputValue = value.trim().toLowerCase();
-    const inputLength = inputValue.length;
-    return inputLength === 0
-      ? []
-      : textilera.filter(
-          lang => lang.name.toLowerCase().slice(0, inputLength) === inputValue
-        );
+  const getSuggestionValue = suggestion => {
+    return suggestion.name;
   };
+  //fin de autocompletar
+
   const handleAuto = (event, { newValue }, { index }, { tipo }) => {
     if (tipo === "textilera") {
       setInputs({
@@ -275,7 +296,6 @@ function Impresar() {
     let restos = inputs.datos.filter((dato, i) => {
       return `${i}` !== index;
     });
-    // console.log(restos);
     setInputs({ ...inputs, datos: restos });
   };
   return (
@@ -296,11 +316,12 @@ function Impresar() {
                 suggestions={suggestionsTextilera}
                 getSuggestions={getSuggestionsTextilera}
                 onSuggestionsClearRequested={
-                  onSuggestionsClearRequestedTexilera
+                  onSuggestionsClearRequestedTextilera
                 }
                 onSuggestionsFetchRequested={
-                  onSuggestionsFetchRequestedTexilera
+                  onSuggestionsFetchRequestedTextilera
                 }
+                getSuggestionValue={getSuggestionValue}
                 name="textilera"
               />
             </Col>

@@ -12,6 +12,7 @@ import {
   FormSelect
 } from "shards-react";
 import FormularioCorte from "../../components/common/FormularioCorteTaller";
+import ConjuntoRemito from "../../components/common/ConjuntoRemito";
 import axios from "axios";
 
 export default function Corte() {
@@ -20,8 +21,13 @@ export default function Corte() {
     encimador: "",
     fecha: "",
     cortador: "",
-    textilera: "",
-    tela: "",
+    conjuntoRemito: [
+      {
+        remito: "",
+        textilera: "",
+        tela: ""
+      }
+    ],
     temporada: "invierno",
     tizada: [
       {
@@ -60,7 +66,17 @@ export default function Corte() {
             activo: true
           }
         },
-        encimados: [{ color: "", cantidad: "", metros: "", kilos: "" }]
+        encimados: [
+          {
+            conjunto: 0,
+            color: "",
+            cantidad: "",
+            metros: "",
+            kilos: "",
+            sobra: "",
+            falta: ""
+          }
+        ]
       }
     ]
   });
@@ -79,6 +95,18 @@ export default function Corte() {
     let value = e.target.value;
     setCorte({ ...corte, [name]: value });
   };
+  const handleAddRemitoConjunto = e => {
+    let newConjunto = {
+      remito: "",
+      textilera: "",
+      tela: ""
+    };
+    setCorte({
+      ...corte,
+      conjuntoRemito: [...corte.conjuntoRemito, newConjunto]
+    });
+  };
+
   const handleAddTizada = () => {
     let nuevaTizada = {
       articulo: "",
@@ -206,6 +234,7 @@ export default function Corte() {
   const handleAddEncimado = e => {
     e.preventDefault();
     let nuevoEncimado = {
+      conjunto: 0,
       color: "",
       cantidad: "",
       metros: "",
@@ -252,18 +281,89 @@ export default function Corte() {
     };
     setCorte({ ...corte });
   };
+
   const registarCorte = () => {
     axios.post(`/corte`, corte).then(res => {
       console.log(res);
       console.log(res.data);
     });
   };
+
+  const handleOpcionChange = e => {
+    let encimado = e.target.dataset.encimado;
+    let index = e.target.dataset.index;
+    let conjunto = e.target.dataset.conjunto;
+    let nuevoEncimado = (corte.tizada[index].encimados[encimado] = {
+      ...corte.tizada[index].encimados[encimado],
+      conjunto
+    });
+    let encimadoNew = immutableSplice(
+      corte.tizada[index].encimados,
+      encimado,
+      1,
+      nuevoEncimado
+    );
+    let newTizada = {
+      ...corte.tizada[index],
+      encimados: encimadoNew
+    };
+
+    let tizadaNew = immutableSplice(corte.tizada, index, 1, newTizada);
+    setCorte({ ...corte, tizada: tizadaNew });
+  };
+
+  const handleChangeRemitoConjunto = e => {
+    let conjuntoIndex = e.target.dataset.index;
+    let name = e.target.name;
+    let value = e.target.value;
+    let nuevoConjunto = {
+      ...corte.conjuntoRemito[conjuntoIndex],
+      [name]: value
+    };
+    let newEncimadoConjunto = immutableSplice(
+      corte.conjuntoRemito,
+      conjuntoIndex,
+      1,
+      nuevoConjunto
+    );
+    setCorte({ ...corte, conjuntoRemito: newEncimadoConjunto });
+  };
+
+  const handleDeleteRemitoConjunto = e => {
+    let dataSetIndex = e.target.dataset.index;
+    let newData = corte.conjuntoRemito.filter(
+      (c, i) => i !== parseInt(dataSetIndex)
+    );
+    setCorte({
+      ...corte,
+      conjuntoRemito: newData
+    });
+  };
+
+  const immutableSplice = (arr, start, deleteCount, ...items) => {
+    return [
+      ...arr.slice(0, start),
+      ...items,
+      ...arr.slice(start + deleteCount)
+    ];
+  };
   return (
     <Col sm="12" md="12" className="FormularioTela">
       <h1>Realizar corte</h1>
       <Card small className="mb-4">
         <CardHeader className="border-bottom">
-          <h6 className="m-0">Tizada</h6>
+          <Row form>
+            {/* <h6 className="m-0">Tizada</h6>
+            <Button className="botonIcons" onClick={handleAddTizada}>
+              <i className="material-icons">add</i>
+            </Button> */}
+            <Col md="2" className="form-group">
+              <label>Agregar tizada </label>
+              <Button className="botonIcons" onClick={handleAddTizada}>
+                <i className="material-icons">add</i>
+              </Button>
+            </Col>
+          </Row>
         </CardHeader>
         <ListGroup flush>
           <ListGroupItem className="px-3">
@@ -296,7 +396,7 @@ export default function Corte() {
                 />
                 <FormFeedback>Complete</FormFeedback>
               </Col>
-              <Col md="3" className="form-group">
+              <Col md="2" className="form-group">
                 <label>Encimador</label>
                 <FormInput
                   value={corte.encimador}
@@ -309,7 +409,7 @@ export default function Corte() {
                 />
                 <FormFeedback>Complete</FormFeedback>
               </Col>
-              <Col md="3" className="form-group">
+              <Col md="2" className="form-group">
                 <label>Cortador</label>
                 <FormInput
                   value={corte.cortador}
@@ -329,39 +429,29 @@ export default function Corte() {
                   <option value="verano">Verano</option>
                 </FormSelect>
               </Col>
-              <Col md="3" className="form-group">
-                <label>Textilera </label>
-                <FormInput
-                  value={corte.textilera}
-                  placeholder="Textilera"
-                  name="textilera"
-                  required
-                  invalid={corte.textilera === "" ? true : false}
-                  valid={corte.textilera === "" ? false : true}
-                  onChange={handlePrincipal}
-                />
-                <FormFeedback>Complete</FormFeedback>
-              </Col>
-              <Col md="3" className="form-group">
-                <label>Tela</label>
-                <FormInput
-                  value={corte.tela}
-                  placeholder="Tela"
-                  name="tela"
-                  required
-                  invalid={corte.tela === "" ? true : false}
-                  valid={corte.tela === "" ? false : true}
-                  onChange={handlePrincipal}
-                />
-                <FormFeedback>Complete</FormFeedback>
-              </Col>
-              <Col md="1" className="form-group">
-                <label>Agregar </label>
-                <Button className="botonIcons" onClick={handleAddTizada}>
+              <Col md="2" className="form-group">
+                <label>Agregar Conjunto </label>
+                <Button
+                  className="botonIcons"
+                  onClick={handleAddRemitoConjunto}
+                >
                   <i className="material-icons">add</i>
                 </Button>
               </Col>
             </Row>
+
+            {corte.conjuntoRemito.map((conjunto, index) => (
+              <ConjuntoRemito
+                key={index}
+                textilera={conjunto.textilera}
+                tela={conjunto.tela}
+                remito={conjunto.remito}
+                handleAddRemitoConjunto={handleAddRemitoConjunto}
+                handleChangeRemitoConjunto={handleChangeRemitoConjunto}
+                index={index}
+                handleDeleteRemitoConjunto={handleDeleteRemitoConjunto}
+              />
+            ))}
           </ListGroupItem>
         </ListGroup>
         {corte.tizada.map((tizada, index) => (
@@ -375,6 +465,8 @@ export default function Corte() {
             handleDeleteEncimado={handleDeleteEncimado}
             handleTizada={handleTizada}
             handleEncimado={handleEncimado}
+            handleOpcionChange={handleOpcionChange}
+            conjunto={corte.conjuntoRemito}
           />
         ))}
         <ListGroup flush>

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import {
   Row,
   Col,
@@ -10,10 +11,13 @@ import {
   Card,
   Button
 } from "shards-react";
+
 import axios from "axios";
 import Autosugerir from "../../components/common/autocompletar";
 import moment from "moment";
 import FormularioTaller from "../../components/common/FormularioCorteTaller";
+import { PDFViewer } from "@react-pdf/renderer";
+import Document from "../../components/taller/imprimir_comprobante";
 
 export default function EnviarTaller() {
   const [original, setOriginal] = useState([]);
@@ -91,7 +95,18 @@ export default function EnviarTaller() {
 
     return cut;
   };
-
+  const [data] = useState({ prueba: "hola" });
+  useEffect(() => {
+    ReactDOM.render(
+      <PDFViewer className="enviarPlancharPDFViewer">
+        <Document data={data} />
+      </PDFViewer>,
+      document.getElementById("pdf")
+    );
+  }, [data]);
+  // const cambiar = e => {
+  //   setData({ prueba: e.target.value });
+  // };
   const onSuggestionsFetchRequested = async ({ value }) => {
     if (temporizador !== null) {
       window.clearTimeout(temporizador);
@@ -208,7 +223,7 @@ export default function EnviarTaller() {
       kilos_stock:
         kilosOriginales - (kilosOriginales / cantidadOriginal) * minimo
     };
-    console.log(newTaller);
+
     let encimadoNew = immutableSplice(
       stock.tizada[index].encimados,
       encimadoIndex,
@@ -425,6 +440,8 @@ export default function EnviarTaller() {
               </span>
             </ListGroupItem>
           </ListGroup>
+
+          <div className="enviarPlancharPDFViewerCanvas" id="pdf"></div>
         </div>
       </Card>
     </Col>

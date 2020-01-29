@@ -100,6 +100,28 @@ export default function() {
         //   icon: '<i class="material-icons">print</i>'
         // }
       ]
+    },
+    {
+      title: "Plancha",
+      htmlBefore: '<i class="fas fa-thermometer-three-quarters"></i>',
+      htmlAfter: '<i class="material-icons">expand_more</i>',
+      links: [
+        {
+          title: "Enviar a plancha",
+          to: "/enviar-plancha",
+          icon: '<i class="material-icons">add</i>'
+        }
+        // {
+        //   title: "Stock de tela",
+        //   to: "/ver-telas",
+        //   icon: '<i class="material-icons">view_module</i>'
+        // },
+        // {
+        //   title: "Imprimir remito",
+        //   to: "/imprimir-remito",
+        //   icon: '<i class="material-icons">print</i>'
+        // }
+      ]
     }
   ];
 }

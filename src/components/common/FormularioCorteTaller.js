@@ -33,7 +33,7 @@ export default function Corte(props) {
             <ListGroup flush>
               <ListGroupItem className="px-3">
                 <Row form>
-                  <Col md="9" className="form-group">
+                  <Col md="10" className="form-group">
                     <Row form>
                       <Col md="3" className="form-group">
                         <label>Articulo</label>
@@ -197,6 +197,8 @@ export default function Corte(props) {
                         handleDeleteEncimado={props.handleDeleteEncimado}
                         readOnly={props.readOnly}
                         original={props.original}
+                        handleOpcionChange={props.handleOpcionChange}
+                        conjunto={props.conjunto}
                       />
                     ))}
                     {props.readOnly === true || props.index === 0 ? null : (
@@ -208,7 +210,7 @@ export default function Corte(props) {
                       </Button>
                     )}
                   </Col>
-                  <Col md="3" className="form-group">
+                  <Col md="2" className="form-group">
                     <Row form>
                       <Col md="12" className="form-group, CenterText">
                         <label>Talles</label>

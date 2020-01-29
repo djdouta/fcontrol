@@ -17,6 +17,8 @@ import VerTelas from "./views/tela/Stock";
 import ImprimirRemito from "./views/tela/ImprimirRemito";
 import RealizarCorte from "./views/corte/RealizarCorte";
 import EnviarTaller from "./views/taller/enviarTaller";
+import EnviarPlancha from "./views/plancha/enviarPlancha";
+
 export default [
   {
     path: "/",
@@ -84,5 +86,10 @@ export default [
     path: "/enviar-taller",
     layout: DefaultLayout,
     component: EnviarTaller
+  },
+  {
+    path: "/enviar-plancha",
+    layout: DefaultLayout,
+    component: EnviarPlancha
   }
 ];

@@ -119,6 +119,7 @@ export default function Autocompletar(props) {
         { tipo: props.name }
       )
   };
+
   return (
     <Autosuggest
       suggestions={props.suggestions}

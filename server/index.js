@@ -21,6 +21,10 @@ app.use(require("./routes/index"));
 app.use(require("./routes/corte"));
 app.use(require("./routes/tela"));
 app.use(require("./routes/taller"));
+app.use(require("./routes/opciones"));
+app.use(require("./routes/tipo_tela"));
+app.use(require("./routes/color_tela"));
+app.use(require("./routes/textilera_tela"));
 //database
 
 const url =

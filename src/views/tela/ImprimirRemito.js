@@ -185,6 +185,17 @@ export default function Stock(props) {
                             <p className="card-text mb-1">{`Tipo: ${data.tipo}`}</p>
                             <p className="card-text mb-1">{`Metros: ${data.metros}`}</p>
                             <p className="card-text mb-1">{`Rollos: ${data.rollos}`}</p>
+                            <p className="card-text mb-1">
+                              Ver factura:
+                              <a
+                                href={`/uploads/facturas/${data.factura}`}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                              >
+                                <i className="fas fa-ticket-alt"></i>
+                              </a>
+                            </p>
+
                             <div className="ImprimirRemitoEstampado">
                               <label className="ImprimirRemitoEstampadoLabel">
                                 Estampado:
