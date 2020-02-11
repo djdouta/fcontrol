@@ -11,8 +11,69 @@ import {
   DropdownMenu,
   DropdownItem
 } from "shards-react";
+import Autosugerir from "./autocompletar";
+import axios from "axios";
+
 export default function Encimado(props) {
   const [dropdownMenu, setDropdownMenu] = useState(false);
+  const [suggestionsRemito, setSuggestionsRemito] = useState([]);
+  const [temporizador, setTemporizador] = useState(null);
+
+  // Api search remito
+  const searchRemito = value => {
+    const inputValue = value.trim().toLowerCase();
+    const inputLength = inputValue.length;
+    let remito = [].find(lang => lang.textilera === props.textilera);
+
+    let tela =
+      inputLength === 0
+        ? []
+        : remito.datos.filter(
+            lang => lang.tipo.toLowerCase().slice(0, inputLength) === inputValue
+          );
+
+    let telasArray = tela.map(e => {
+      return e.tipo;
+    });
+    let uniq = [...new Set(telasArray)];
+    let final = uniq.map(e => {
+      return {
+        tipo: e
+      };
+    });
+    return final;
+  };
+
+  //Autogest tipo
+  const getSuggestionsRemito = async value => {
+    const result = await searchRemito(value);
+    // setRemito(result.data);
+    let nuevo = result.data.map(element => {
+      return { name: element.remito };
+    });
+    return nuevo;
+  };
+  const onSuggestionsFetchRequestedRemito = async ({ value }) => {
+    if (temporizador !== null) {
+      window.clearTimeout(temporizador);
+    }
+    let temporizadorID = window.setTimeout(async () => {
+      let newSuggestion = await getSuggestionsRemito(value);
+
+      setSuggestionsRemito(newSuggestion);
+    }, 200);
+    setTemporizador(temporizadorID);
+  };
+
+  const onSuggestionsClearRequestedRemito = () => {
+    setSuggestionsRemito([]);
+  };
+  const getSuggestionValueRemito = suggestion => {
+    // let realRemito = remitos.filter(e => e.remito === suggestion.name);
+    // setRemito(realRemito);
+
+    return suggestion.name;
+  };
   return (
     <Fragment>
       <Row form>
@@ -47,30 +108,45 @@ export default function Encimado(props) {
         </Col>
         <Col md="2" className="form-group">
           <label>Color</label>
-          <FormInput
-            placeholder="Color"
-            name="color"
-            required
-            readOnly={props.readOnly}
-            invalid={
-              props.readOnly === true
-                ? null
-                : props.encimado.color === ""
-                ? true
-                : false
-            }
-            valid={
-              props.readOnly === true
-                ? null
-                : props.encimado.color === ""
-                ? false
-                : true
-            }
-            onChange={props.readOnly === true ? null : props.handleEncimado}
-            value={props.encimado.color}
-            data-index={props.index}
-            data-encimado={props.encimadoIndex}
-          />
+          {props.readOnly === true ? (
+            <FormInput
+              placeholder="Color"
+              name="color"
+              required
+              readOnly={props.readOnly}
+              invalid={
+                props.readOnly === true
+                  ? null
+                  : props.encimado.color === ""
+                  ? true
+                  : false
+              }
+              valid={
+                props.readOnly === true
+                  ? null
+                  : props.encimado.color === ""
+                  ? false
+                  : true
+              }
+              onChange={props.readOnly === true ? null : props.handleEncimado}
+              value={props.encimado.color}
+              data-index={props.index}
+              data-encimado={props.encimadoIndex}
+            />
+          ) : (
+            <Autosugerir
+              handleAuto={props.handleAuto}
+              getSuggestionValue={getSuggestionValueRemito}
+              value="2"
+              index={props.index}
+              suggestions={suggestionsRemito}
+              getSuggestions={getSuggestionsRemito}
+              onSuggestionsClearRequested={onSuggestionsClearRequestedRemito}
+              onSuggestionsFetchRequested={onSuggestionsFetchRequestedRemito}
+              name="remito"
+            />
+          )}
+
           {props.readOnly === true ? null : (
             <FormFeedback>Complete</FormFeedback>
           )}

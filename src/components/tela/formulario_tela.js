@@ -43,7 +43,7 @@ export default function FormularioTela(props) {
   const getSuggestionsTipo = async value => {
     const result = await searchTipo(value);
     let nuevo = result.data.map(element => {
-      return { name: element.name };
+      return { name: element.name, id: element.id };
     });
     return nuevo;
   };
@@ -63,6 +63,7 @@ export default function FormularioTela(props) {
     setSuggestionsTipo([]);
   };
   const getSuggestionValueTipo = suggestion => {
+    // props.handleCodigo(suggestion, "tipo", props.index);
     return suggestion.name;
   };
 
@@ -70,7 +71,7 @@ export default function FormularioTela(props) {
   const getSuggestionsColor = async value => {
     const result = await searchColor(value);
     let nuevo = result.data.map(element => {
-      return { name: element.name };
+      return { name: element.name, id: element.id };
     });
     return nuevo;
   };
@@ -90,6 +91,7 @@ export default function FormularioTela(props) {
     setSuggestionsColor([]);
   };
   const getSuggestionValueColor = suggestion => {
+    // props.handleCodigo(suggestion, "color", props.index);
     return suggestion.name;
   };
 

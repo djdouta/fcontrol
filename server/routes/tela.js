@@ -47,4 +47,5 @@ router.post(
   }
 );
 
+router.get("/tela/remito", tela_controller.findRemito);
 module.exports = router;

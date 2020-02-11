@@ -189,6 +189,7 @@ export default function Corte(props) {
                     </Row>
                     {props.tizada.encimados.map((e, i) => (
                       <Encimado
+                        handleAuto={props.handleAuto}
                         key={i}
                         index={props.index}
                         encimadoIndex={i}

@@ -116,7 +116,9 @@ export default function Autocompletar(props) {
         e,
         { newValue },
         { index: props.index },
-        { tipo: props.name }
+        { tipo: props.name },
+        { id: props.suggestions },
+        { data: props.data }
       )
   };
 

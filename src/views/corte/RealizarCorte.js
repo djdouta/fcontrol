@@ -81,14 +81,10 @@ export default function Corte() {
     ]
   });
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const result = await axios("/corte");
-  //     console.log(result);
-  //     // setCorte(result.data);
-  //   };
-  //   fetchData();
-  // }, []);
+  //State para  reconcocer todos los remitos existentes
+  const [multiRemitos, setMultiRemito] = useState([]);
+
+  const stockTela = useState({});
 
   const handlePrincipal = e => {
     let name = e.target.name;
@@ -347,6 +343,60 @@ export default function Corte() {
       ...arr.slice(start + deleteCount)
     ];
   };
+
+  const handleAuto = (
+    event,
+    { newValue },
+    { index },
+    { tipo },
+    { id },
+    { data }
+  ) => {
+    let conjunto = corte.conjuntoRemito[index];
+
+    switch (tipo) {
+      case "remito":
+        let remitos = data.filter(e => e.remito === newValue);
+        remitos.length > 0 ? setMultiRemito(remitos) : setMultiRemito([]);
+        conjunto = {
+          ...conjunto,
+          [tipo]: newValue,
+          textilera: "",
+          tela: ""
+        };
+        break;
+      case "textilera":
+        conjunto = {
+          ...conjunto,
+          tela: "",
+          [tipo]: newValue
+        };
+        break;
+      case "tela":
+        conjunto = {
+          ...conjunto,
+          [tipo]: newValue
+        };
+        break;
+      default:
+        break;
+    }
+
+    let newEncimadoConjunto = immutableSplice(
+      corte.conjuntoRemito,
+      index,
+      1,
+      conjunto
+    );
+    setCorte({
+      ...corte,
+      conjuntoRemito: newEncimadoConjunto
+    });
+  };
+
+  const handleOrginal = original => {
+    console.log(original);
+  };
   return (
     <Col sm="12" md="12" className="FormularioTela">
       <h1>Realizar corte</h1>
@@ -442,6 +492,10 @@ export default function Corte() {
 
             {corte.conjuntoRemito.map((conjunto, index) => (
               <ConjuntoRemito
+                readOnly={true}
+                multiRemitos={multiRemitos}
+                handleOrginal={handleOrginal}
+                handleAuto={handleAuto}
                 key={index}
                 textilera={conjunto.textilera}
                 tela={conjunto.tela}
@@ -460,6 +514,7 @@ export default function Corte() {
             index={index}
             handleDeleteTizada={handleDeleteTizada}
             tizada={tizada}
+            handleAuto={handleAuto}
             handleTalles={handleTalles}
             handleAddEncimado={handleAddEncimado}
             handleDeleteEncimado={handleDeleteEncimado}

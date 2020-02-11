@@ -48,16 +48,25 @@ function Impresar() {
   const [pdfShow, setPdfShow] = useState(true);
   const [temporizador, setTemporizador] = useState(null);
   const [suggestionsTextilera, setSuggestionsTextilera] = useState([]);
+  const [idCodigo, setIdCodigo] = useState({
+    textilera: "",
+    restos: [
+      {
+        color: "",
+        tipo: ""
+      }
+    ]
+  });
 
   //Busqueda api rest
   const searchTextilera = async code => {
-    const color = await axios("/textileraTela/find", {
+    const textilera = await axios("/textileraTela/find", {
       params: {
         nombre: code
       }
     });
 
-    return color;
+    return textilera;
   };
 
   const handleChangeData = ({ target }) => {
@@ -86,10 +95,25 @@ function Impresar() {
   const handleChangeInput = ({ target }) => {
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
-    setInputs({
-      ...inputs,
-      [name]: value
-    });
+    if (target.name === "remito") {
+      let newData = inputs.datos.map((e, i) => {
+        return {
+          ...e,
+          codigo: `${value}${idCodigo.textilera}${idCodigo.restos[i].tipo}${idCodigo.restos[i].color}`
+        };
+      });
+
+      setInputs({
+        ...inputs,
+        remito: value,
+        datos: newData
+      });
+    } else {
+      setInputs({
+        ...inputs,
+        [name]: value
+      });
+    }
   };
 
   const handleClick = ({ target }) => {
@@ -144,7 +168,9 @@ function Impresar() {
           textilera: inputs.datos[inputs.datos.length - 1].textilera,
           metros: "",
           rollos: "",
-          codigo: "",
+          codigo: `${inputs.remito}${inputs.textilera}${
+            idCodigo.restos[idCodigo.restos.length - 1].tipo
+          }`,
           estampado: inputs.datos[inputs.datos.length - 1].estampado,
           mostrar: true,
           telaImagen: no_file,
@@ -153,6 +179,15 @@ function Impresar() {
       ]
     };
     setInputs(nuevoInput);
+    let newId = {
+      ...idCodigo,
+      restos: [
+        ...idCodigo.restos,
+        { color: "", tipo: idCodigo.restos[idCodigo.restos.length - 1].tipo }
+      ]
+    };
+    console.log(idCodigo.restos[idCodigo.restos.length - 1].tipo);
+    setIdCodigo(newId);
   };
 
   const handleShow = e => {
@@ -247,7 +282,10 @@ function Impresar() {
   const getSuggestionsTextilera = async value => {
     const result = await searchTextilera(value);
     let nuevo = result.data.map(element => {
-      return { name: element.name };
+      return {
+        id: element.id,
+        name: element.name
+      };
     });
     return nuevo;
   };
@@ -271,22 +309,65 @@ function Impresar() {
   };
   //fin de autocompletar
 
-  const handleAuto = (event, { newValue }, { index }, { tipo }) => {
-    if (tipo === "textilera") {
-      setInputs({
-        ...inputs,
-        [tipo]: newValue
-      });
+  const handleAuto = (event, { newValue }, { index }, { tipo }, { id }) => {
+    if (id.length === 0) {
+      if (tipo === "textilera") {
+        setInputs({
+          ...inputs,
+          [tipo]: newValue
+        });
+      } else {
+        let datos = inputs.datos[index];
+        datos = {
+          ...datos,
+          [tipo]: newValue
+        };
+        let newDatos = immutableSplice(inputs.datos, index, 1, datos);
+        setInputs({ ...inputs, datos: newDatos });
+      }
     } else {
-      let datos = inputs.datos[index];
-      datos = {
-        ...datos,
-        [tipo]: newValue
-      };
-      inputs.datos[index] = datos;
-      setInputs({
-        ...inputs
-      });
+      if (tipo === "textilera") {
+        let element = id.find(e => e.name === newValue);
+
+        let newId = {
+          textilera: element !== undefined ? element.id : "",
+          restos: idCodigo.restos
+        };
+        setIdCodigo(newId);
+        let newData = inputs.datos.map((e, i) => {
+          return {
+            ...e,
+            codigo: `${inputs.remito}${newId.textilera}${idCodigo.restos[i].tipo}${idCodigo.restos[i].color}`
+          };
+        });
+
+        setInputs({ ...inputs, datos: newData, textilera: newValue });
+      } else {
+        let resto = idCodigo.restos[index];
+        let element = id.find(e => e.name === newValue);
+        resto = {
+          ...resto,
+          [tipo]: element !== undefined ? element.id : ""
+        };
+
+        let newRestos = immutableSplice(idCodigo.restos, index, 1, resto);
+        setIdCodigo({ ...idCodigo, restos: newRestos });
+
+        let codigo = buscarCodigo(
+          element !== undefined ? element.id : "",
+          tipo,
+          index
+        );
+
+        let newdata = inputs.datos[index];
+        newdata = {
+          ...newdata,
+          codigo,
+          [tipo]: newValue
+        };
+        let newDatos = immutableSplice(inputs.datos, index, 1, newdata);
+        setInputs({ ...inputs, datos: newDatos });
+      }
     }
   };
 
@@ -296,7 +377,31 @@ function Impresar() {
     let restos = inputs.datos.filter((dato, i) => {
       return `${i}` !== index;
     });
+    let newid = idCodigo.restos.filter((dato, i) => {
+      return `${i}` !== index;
+    });
+    console.log(newid);
+    setIdCodigo({ ...idCodigo, restos: newid });
     setInputs({ ...inputs, datos: restos });
+  };
+
+  const buscarCodigo = (id, tipo, index) => {
+    let codigo = "";
+
+    if (tipo === "color") {
+      codigo = `${inputs.remito}${idCodigo.textilera}${idCodigo.restos[index].tipo}${id}`;
+    } else {
+      codigo = `${inputs.remito}${idCodigo.textilera}${id}${idCodigo.restos[index].color}`;
+    }
+
+    return codigo;
+  };
+  const immutableSplice = (arr, start, deleteCount, ...items) => {
+    return [
+      ...arr.slice(0, start),
+      ...items,
+      ...arr.slice(start + deleteCount)
+    ];
   };
   return (
     <Col sm="12" md="12" className="FormularioTela">

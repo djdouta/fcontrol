@@ -18,3 +18,17 @@ exports.showTela = async (req, res, next) => {
     res.status(500).send(err);
   }
 };
+
+exports.findRemito = async (req, res) => {
+  const telas = await Tela.find({
+    $and: [
+      { remito: { $regex: ".*" + req.query.remito + ".*" } },
+      { "datos.metros_stock": { $gt: 0 } }
+    ]
+  });
+  try {
+    res.json(telas);
+  } catch (error) {
+    res.status(500).send({ error });
+  }
+};
