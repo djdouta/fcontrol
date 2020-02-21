@@ -12,68 +12,58 @@ import {
   DropdownItem
 } from "shards-react";
 import Autosugerir from "./autocompletar";
-import axios from "axios";
+import TableTalles from "./TableTalles";
 
 export default function Encimado(props) {
   const [dropdownMenu, setDropdownMenu] = useState(false);
-  const [suggestionsRemito, setSuggestionsRemito] = useState([]);
+  const [suggestionsColor, setSuggestionsColor] = useState([]);
   const [temporizador, setTemporizador] = useState(null);
 
   // Api search remito
-  const searchRemito = value => {
+  const searchColor = value => {
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
-    let remito = [].find(lang => lang.textilera === props.textilera);
+    // let remito = [].find(lang => lang.textilera === props.textilera);
 
-    let tela =
-      inputLength === 0
-        ? []
-        : remito.datos.filter(
-            lang => lang.tipo.toLowerCase().slice(0, inputLength) === inputValue
-          );
-
-    let telasArray = tela.map(e => {
-      return e.tipo;
-    });
-    let uniq = [...new Set(telasArray)];
-    let final = uniq.map(e => {
-      return {
-        tipo: e
-      };
-    });
-    return final;
+    let colores =
+      inputLength === 0 || inputValue === "$"
+        ? props.multiTela[props.encimado.conjunto].tela
+        : props.multiTela[props.encimado.conjunto].tela.filter(color => {
+            return (
+              color.color.toLowerCase().slice(0, inputLength) === inputValue
+            );
+          });
+    return colores;
   };
 
   //Autogest tipo
-  const getSuggestionsRemito = async value => {
-    const result = await searchRemito(value);
+  const getSuggestionsColor = async value => {
+    const result = await searchColor(value);
     // setRemito(result.data);
-    let nuevo = result.data.map(element => {
-      return { name: element.remito };
+    let nuevo = result.map(element => {
+      return { name: element.color };
     });
     return nuevo;
   };
-  const onSuggestionsFetchRequestedRemito = async ({ value }) => {
+  const onSuggestionsFetchRequestedColor = async ({ value }) => {
     if (temporizador !== null) {
       window.clearTimeout(temporizador);
     }
     let temporizadorID = window.setTimeout(async () => {
-      let newSuggestion = await getSuggestionsRemito(value);
-
-      setSuggestionsRemito(newSuggestion);
+      let newSuggestion = await getSuggestionsColor(value);
+      setSuggestionsColor(newSuggestion);
     }, 200);
     setTemporizador(temporizadorID);
   };
 
-  const onSuggestionsClearRequestedRemito = () => {
-    setSuggestionsRemito([]);
-  };
-  const getSuggestionValueRemito = suggestion => {
-    // let realRemito = remitos.filter(e => e.remito === suggestion.name);
-    // setRemito(realRemito);
-
+  const getSuggestionValueColor = suggestion => {
     return suggestion.name;
   };
+
+  const onSuggestionsClearRequestedColor = () => {
+    setSuggestionsColor([]);
+  };
+
   return (
     <Fragment>
       <Row form>
@@ -106,44 +96,35 @@ export default function Encimado(props) {
             </Dropdown>
           </InputGroup>
         </Col>
-        <Col md="2" className="form-group">
+        <Col md="3" className="form-group">
           <label>Color</label>
-          {props.readOnly === true ? (
+          {props.multiTela[props.encimado.conjunto].length === 0 ? (
             <FormInput
               placeholder="Color"
               name="color"
               required
-              readOnly={props.readOnly}
-              invalid={
-                props.readOnly === true
-                  ? null
-                  : props.encimado.color === ""
-                  ? true
-                  : false
-              }
-              valid={
-                props.readOnly === true
-                  ? null
-                  : props.encimado.color === ""
-                  ? false
-                  : true
-              }
-              onChange={props.readOnly === true ? null : props.handleEncimado}
-              value={props.encimado.color}
+              readOnly={true}
+              invalid={props.encimado.color === "" ? true : false}
+              valid={props.encimado.color === "" ? false : true}
+              defaultValue={props.encimado.color}
               data-index={props.index}
               data-encimado={props.encimadoIndex}
             />
           ) : (
             <Autosugerir
               handleAuto={props.handleAuto}
-              getSuggestionValue={getSuggestionValueRemito}
-              value="2"
-              index={props.index}
-              suggestions={suggestionsRemito}
-              getSuggestions={getSuggestionsRemito}
-              onSuggestionsClearRequested={onSuggestionsClearRequestedRemito}
-              onSuggestionsFetchRequested={onSuggestionsFetchRequestedRemito}
-              name="remito"
+              getSuggestionValue={getSuggestionValueColor}
+              value={props.encimado.color}
+              index={{
+                index: props.index,
+                encimadoIndex: props.encimadoIndex
+              }}
+              suggestions={suggestionsColor}
+              getSuggestions={getSuggestionsColor}
+              onSuggestionsClearRequested={onSuggestionsClearRequestedColor}
+              onSuggestionsFetchRequested={onSuggestionsFetchRequestedColor}
+              data={props.multiTela[props.encimado.conjunto]}
+              name="color"
             />
           )}
 
@@ -151,7 +132,7 @@ export default function Encimado(props) {
             <FormFeedback>Complete</FormFeedback>
           )}
         </Col>
-        <Col md="2" className="form-group">
+        <Col md="3" className="form-group">
           <label>Cantidad</label>
           <FormInput
             step="1"
@@ -167,19 +148,13 @@ export default function Encimado(props) {
             required
             invalid={props.encimado.cantidad === "" ? true : false}
             valid={props.encimado.cantidad === "" ? false : true}
-            onChange={
-              props.readOnly === true
-                ? props.original.numero === undefined
-                  ? () => {}
-                  : props.handleEncimado
-                : props.handleEncimado
-            }
+            onChange={props.handleEncimado}
             data-index={props.index}
             data-encimado={props.encimadoIndex}
           />
           <FormFeedback>Complete</FormFeedback>
         </Col>
-        <Col md="2" className="form-group">
+        <Col md="3" className="form-group">
           <label>Metros</label>
           <FormInput
             min="1"
@@ -196,19 +171,20 @@ export default function Encimado(props) {
             required
             invalid={props.encimado.metros === "" ? true : false}
             valid={props.encimado.metros === "" ? false : true}
-            onChange={props.readOnly === true ? null : props.handleEncimado}
+            onChange={props.handleEncimado}
             data-index={props.index}
             data-encimado={props.encimadoIndex}
           />
           <FormFeedback>Complete</FormFeedback>
         </Col>
       </Row>
+
       {props.readOnly === true ? null : (
         <Row form>
           <Col md="1" className="form-group">
             <label>.</label>
           </Col>
-          <Col md="2" className="form-group">
+          <Col md="3" className="form-group">
             <label>Kilos</label>
             <FormInput
               min="1"
@@ -225,13 +201,13 @@ export default function Encimado(props) {
               required
               invalid={props.encimado.kilos === "" ? true : false}
               valid={props.encimado.kilos === "" ? false : true}
-              onChange={props.readOnly === true ? null : props.handleEncimado}
+              onChange={props.handleEncimado}
               data-index={props.index}
               data-encimado={props.encimadoIndex}
             />
             <FormFeedback>Complete</FormFeedback>
           </Col>
-          <Col md="2" className="form-group">
+          <Col md="3" className="form-group">
             <label>m. sobra</label>
             <FormInput
               min="1"
@@ -244,13 +220,13 @@ export default function Encimado(props) {
               required
               invalid={props.encimado.sobra === "" ? true : false}
               valid={props.encimado.sobra === "" ? false : true}
-              onChange={props.readOnly === true ? null : props.handleEncimado}
+              onChange={props.handleEncimado}
               data-index={props.index}
               data-encimado={props.encimadoIndex}
             />
             <FormFeedback>Complete</FormFeedback>
           </Col>
-          <Col md="2" className="form-group">
+          <Col md="3" className="form-group">
             <label>Falta</label>
             <FormInput
               min="1"
@@ -263,7 +239,7 @@ export default function Encimado(props) {
               required
               invalid={props.encimado.falta === "" ? true : false}
               valid={props.encimado.falta === "" ? false : true}
-              onChange={props.readOnly === true ? null : props.handleEncimado}
+              onChange={props.handleEncimado}
               data-index={props.index}
               data-encimado={props.encimadoIndex}
             />

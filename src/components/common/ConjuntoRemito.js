@@ -24,12 +24,12 @@ export default function ConjuntoRemito(props) {
   const searchTextilera = textilera => {
     const inputValue = textilera.trim().toLowerCase();
     const inputLength = inputValue.length;
-
     return inputLength === 0
       ? []
       : remitos.filter(
-          lang =>
-            lang.textilera.toLowerCase().slice(0, inputLength) === inputValue
+          remito =>
+            remito.textilera.toLowerCase().slice(0, inputLength) ===
+              inputValue && remito.remito === props.remito
         );
   };
 
@@ -120,7 +120,6 @@ export default function ConjuntoRemito(props) {
   //Autogest tela
   const getSuggestionsTela = value => {
     const result = searchTela(value);
-    console.log(result);
     let nuevo = result.map(element => {
       return { name: element.tipo };
       //pendiente
@@ -145,6 +144,7 @@ export default function ConjuntoRemito(props) {
     // props.handleCodigo(suggestion, "tipo", props.index);
     return suggestion.name;
   };
+
   return (
     <Row form>
       <Col md="1" className="form-group">
@@ -168,7 +168,8 @@ export default function ConjuntoRemito(props) {
       </Col>
       <Col md="3" className="form-group">
         <label>Textilera </label>
-        {props.readOnly === true && props.multiRemitos.length === 0 ? (
+        {props.readOnly === true &&
+        props.multiRemitos[props.index].length === 0 ? (
           <FormInput
             data-index={props.index}
             value={props.textilera}
@@ -197,18 +198,33 @@ export default function ConjuntoRemito(props) {
       </Col>
       <Col md="3" className="form-group">
         <label>Tela </label>
-        <Autosugerir
-          handleAuto={props.handleAuto}
-          getSuggestionValue={getSuggestionValueTela}
-          value={props.tela}
-          index={props.index}
-          suggestions={suggestionsTela}
-          getSuggestions={getSuggestionsTela}
-          onSuggestionsClearRequested={onSuggestionsClearRequestedTela}
-          onSuggestionsFetchRequested={onSuggestionsFetchRequestedTela}
-          name="tela"
-          data={remitos}
-        />
+        {props.readOnly === true &&
+        props.multiTextilera[props.index].length === 0 ? (
+          <FormInput
+            data-index={props.index}
+            value={props.tela}
+            placeholder="tela"
+            name="tela"
+            required
+            invalid={props.tela === "" ? true : false}
+            valid={props.tela === "" ? false : true}
+            readOnly={props.readOnly}
+            onChange={props.handleChangeRemitoConjunto}
+          />
+        ) : (
+          <Autosugerir
+            handleAuto={props.handleAuto}
+            getSuggestionValue={getSuggestionValueTela}
+            value={props.tela}
+            index={props.index}
+            suggestions={suggestionsTela}
+            getSuggestions={getSuggestionsTela}
+            onSuggestionsClearRequested={onSuggestionsClearRequestedTela}
+            onSuggestionsFetchRequested={onSuggestionsFetchRequestedTela}
+            name="tela"
+            data={remitos}
+          />
+        )}
       </Col>
 
       {props.index === 0 ? null : (

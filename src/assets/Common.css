@@ -6,9 +6,21 @@
   height: 50%;
   padding: 0;
 }
-.botonIcons > .material-icons {
+.botonIcons > .material-icons,
+.botonIconsTizada > .material-icons {
   font-size: 20px;
+}
+.botonIconsTizada {
+  padding: 0;
+  width: 100%;
+  line-height: 1.125;
 }
 .PeddingIcon {
   padding: 5px;
+}
+.botonCheckBox input {
+  padding: 5px;
+}
+.form-group {
+  margin-bottom: 1em;
 }

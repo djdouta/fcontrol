@@ -308,7 +308,7 @@ function Impresar() {
     return suggestion.name;
   };
   //fin de autocompletar
-
+  console.log("hola mudno");
   const handleAuto = (event, { newValue }, { index }, { tipo }, { id }) => {
     if (id.length === 0) {
       if (tipo === "textilera") {

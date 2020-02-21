@@ -9,7 +9,8 @@ import {
   CardHeader,
   Card,
   Button,
-  FormSelect
+  FormSelect,
+  FormCheckbox
 } from "shards-react";
 import FormularioCorte from "../../components/common/FormularioCorteTaller";
 import ConjuntoRemito from "../../components/common/ConjuntoRemito";
@@ -17,6 +18,7 @@ import axios from "axios";
 
 export default function Corte() {
   const [corte, setCorte] = useState({
+    mismaTela: false,
     numero: "",
     encimador: "",
     fecha: "",
@@ -36,36 +38,7 @@ export default function Corte() {
         referencia: "",
         largo: "",
         ancho: "",
-        talles: {
-          uno: {
-            valor: 1,
-            activo: false
-          },
-          dos: {
-            valor: 2,
-            activo: false
-          },
-          tres: {
-            valor: 3,
-            activo: false
-          },
-          cuatro: {
-            valor: 4,
-            activo: false
-          },
-          cinco: {
-            valor: 5,
-            activo: false
-          },
-          seis: {
-            valor: 6,
-            activo: false
-          },
-          unico: {
-            valor: "unico",
-            activo: true
-          }
-        },
+        talles: [],
         encimados: [
           {
             conjunto: 0,
@@ -80,9 +53,10 @@ export default function Corte() {
       }
     ]
   });
-
   //State para  reconcocer todos los remitos existentes
-  const [multiRemitos, setMultiRemito] = useState([]);
+  const [multiRemitos, setMultiRemito] = useState([[]]);
+  const [multiTextilera, setMultiTextilera] = useState([[]]);
+  const [multiTela, setMultiTela] = useState([[]]);
 
   const stockTela = useState({});
 
@@ -101,8 +75,11 @@ export default function Corte() {
       ...corte,
       conjuntoRemito: [...corte.conjuntoRemito, newConjunto]
     });
-  };
 
+    setMultiTextilera([...multiTextilera, []]);
+    setMultiTela([...multiTela, []]);
+    setMultiRemito([...multiRemitos, []]);
+  };
   const handleAddTizada = () => {
     let nuevaTizada = {
       articulo: "",
@@ -110,37 +87,18 @@ export default function Corte() {
       referencia: "",
       largo: "",
       ancho: "",
-      talles: {
-        uno: {
-          valor: 1,
-          activo: false
-        },
-        dos: {
-          valor: 2,
-          activo: false
-        },
-        tres: {
-          valor: 3,
-          activo: false
-        },
-        cuatro: {
-          valor: 4,
-          activo: false
-        },
-        cinco: {
-          valor: 5,
-          activo: false
-        },
-        seis: {
-          valor: 6,
-          activo: false
-        },
-        unico: {
-          valor: "unico",
-          activo: true
+      talles: [],
+      encimados: [
+        {
+          conjunto: 0,
+          color: "",
+          cantidad: "",
+          metros: "",
+          kilos: "",
+          sobra: "",
+          falta: ""
         }
-      },
-      encimados: [{ color: "", cantidad: "", metros: "", kilos: "" }]
+      ]
     };
 
     setCorte({ ...corte, tizada: [...corte.tizada, nuevaTizada] });
@@ -162,70 +120,28 @@ export default function Corte() {
   };
   const handleTalles = e => {
     e.preventDefault();
+
     let indexTizada = e.target.dataset.index;
     let valor = e.target.dataset.valor;
-    let activo = e.target.dataset.activo;
-    let talle = e.target.dataset.talle;
+    let oldTalle = corte.tizada[indexTizada].talles;
+    oldTalle = [...oldTalle, valor];
 
-    let newTalle = {};
-    Object.keys(corte.tizada[indexTizada].talles).forEach((key, index) => {
-      if (key === talle) {
-        if (key === "unico") {
-          if (activo === "true") {
-            newTalle = {
-              ...corte.tizada[indexTizada].talles,
-              unico: { valor: "unico", activo: false }
-            };
-          } else {
-            newTalle = {
-              uno: {
-                valor: 1,
-                activo: false
-              },
-              dos: {
-                valor: 2,
-                activo: false
-              },
-              tres: {
-                valor: 3,
-                activo: false
-              },
-              cuatro: {
-                valor: 4,
-                activo: false
-              },
-              cinco: {
-                valor: 5,
-                activo: false
-              },
-              seis: {
-                valor: 6,
-                activo: false
-              },
-              unico: { valor: "unico", activo: true }
-            };
-          }
-        } else {
-          if (activo === "true") {
-            newTalle = {
-              ...corte.tizada[indexTizada].talles,
-              [talle]: { valor: valor, activo: false }
-            };
-          } else {
-            newTalle = {
-              ...corte.tizada[indexTizada].talles,
-              [talle]: { valor: valor, activo: true },
-              unico: { valor: "unico", activo: false }
-            };
-          }
-        }
-      }
-    });
-    corte.tizada[indexTizada] = {
+    let newTizada = immutableSplice(corte.tizada, indexTizada, 1, {
       ...corte.tizada[indexTizada],
-      talles: newTalle
-    };
-    setCorte({ ...corte });
+      talles: oldTalle
+    });
+    setCorte({ ...corte, tizada: newTizada });
+  };
+  const handleDeleteTalles = e => {
+    let index = e.target.dataset.index;
+
+    let newTalles = immutablePop(corte.tizada[index].talles);
+
+    let newTizada = immutableSplice(corte.tizada, index, 1, {
+      ...corte.tizada[index],
+      talles: newTalles
+    });
+    setCorte({ ...corte, tizada: newTizada });
   };
   const handleAddEncimado = e => {
     e.preventDefault();
@@ -237,7 +153,9 @@ export default function Corte() {
       kilos: "",
       cantidad_stock: "",
       metros_stock: "",
-      kilos_stock: ""
+      kilos_stock: "",
+      sobra: "",
+      falta: ""
     };
 
     corte.tizada[e.currentTarget.dataset.index] = {
@@ -277,14 +195,12 @@ export default function Corte() {
     };
     setCorte({ ...corte });
   };
-
   const registarCorte = () => {
     axios.post(`/corte`, corte).then(res => {
       console.log(res);
       console.log(res.data);
     });
   };
-
   const handleOpcionChange = e => {
     let encimado = e.target.dataset.encimado;
     let index = e.target.dataset.index;
@@ -307,7 +223,6 @@ export default function Corte() {
     let tizadaNew = immutableSplice(corte.tizada, index, 1, newTizada);
     setCorte({ ...corte, tizada: tizadaNew });
   };
-
   const handleChangeRemitoConjunto = e => {
     let conjuntoIndex = e.target.dataset.index;
     let name = e.target.name;
@@ -324,7 +239,6 @@ export default function Corte() {
     );
     setCorte({ ...corte, conjuntoRemito: newEncimadoConjunto });
   };
-
   const handleDeleteRemitoConjunto = e => {
     let dataSetIndex = e.target.dataset.index;
     let newData = corte.conjuntoRemito.filter(
@@ -335,7 +249,6 @@ export default function Corte() {
       conjuntoRemito: newData
     });
   };
-
   const immutableSplice = (arr, start, deleteCount, ...items) => {
     return [
       ...arr.slice(0, start),
@@ -343,7 +256,9 @@ export default function Corte() {
       ...arr.slice(start + deleteCount)
     ];
   };
-
+  const immutablePop = arr => {
+    return arr.slice(0, -1);
+  };
   const handleAuto = (
     event,
     { newValue },
@@ -353,50 +268,105 @@ export default function Corte() {
     { data }
   ) => {
     let conjunto = corte.conjuntoRemito[index];
+    const agregarPorConjunto = () => {
+      let newEncimadoConjunto = immutableSplice(
+        corte.conjuntoRemito,
+        index,
+        1,
+        conjunto
+      );
+      setCorte({
+        ...corte,
+        conjuntoRemito: newEncimadoConjunto
+      });
+    };
 
     switch (tipo) {
       case "remito":
         let remitos = data.filter(e => e.remito === newValue);
-        remitos.length > 0 ? setMultiRemito(remitos) : setMultiRemito([]);
+        setMultiRemito(immutableSplice(multiRemitos, index, 1, remitos));
+        setMultiTextilera(immutableSplice(multiTextilera, index, 1, []));
+        setMultiTela(immutableSplice(multiTela, index, 1, []));
+
         conjunto = {
           ...conjunto,
           [tipo]: newValue,
           textilera: "",
           tela: ""
         };
+        agregarPorConjunto();
+
         break;
       case "textilera":
+        let textileras = data.filter(
+          e =>
+            e.textilera === newValue &&
+            corte.conjuntoRemito[index].remito === e.remito
+        );
+
+        setMultiTextilera(
+          immutableSplice(multiTextilera, index, 1, textileras)
+        );
+        setMultiTela(immutableSplice(multiTela, index, 1, []));
         conjunto = {
           ...conjunto,
           tela: "",
           [tipo]: newValue
         };
+        agregarPorConjunto();
+
         break;
       case "tela":
+        let telas = data.find(
+          e =>
+            corte.conjuntoRemito[index].remito === e.remito &&
+            corte.conjuntoRemito[index].textilera === e.textilera
+        );
+
+        let newTela = {
+          _id: telas._id,
+          fecha: telas.fecha,
+          fecha_remito: telas.fecha_remito,
+          remito: telas.remito,
+          textilera: telas.textilera,
+          tela: telas.datos.filter(e => e.tipo === newValue)
+        };
+
+        let newMultiTela = newTela.tela === undefined ? [] : newTela;
+        setMultiTela(immutableSplice(multiTela, index, 1, newMultiTela));
+
         conjunto = {
           ...conjunto,
           [tipo]: newValue
         };
+        agregarPorConjunto();
+        break;
+      case "color":
+        let newEnciamdo = {
+          ...corte.tizada[index.index].encimados[index.encimadoIndex],
+          color: newValue
+        };
+        let encimados = immutableSplice(
+          corte.tizada[index.index].encimados,
+          index.encimadoIndex,
+          1,
+          newEnciamdo
+        );
+        let newTizadas = immutableSplice(corte.tizada, index.index, 1, {
+          ...corte.tizada[index.index],
+          encimados: encimados
+        });
+        setCorte({ ...corte, tizada: newTizadas });
         break;
       default:
         break;
     }
-
-    let newEncimadoConjunto = immutableSplice(
-      corte.conjuntoRemito,
-      index,
-      1,
-      conjunto
-    );
-    setCorte({
-      ...corte,
-      conjuntoRemito: newEncimadoConjunto
-    });
   };
 
   const handleOrginal = original => {
     console.log(original);
   };
+
   return (
     <Col sm="12" md="12" className="FormularioTela">
       <h1>Realizar corte</h1>
@@ -407,11 +377,33 @@ export default function Corte() {
             <Button className="botonIcons" onClick={handleAddTizada}>
               <i className="material-icons">add</i>
             </Button> */}
-            <Col md="2" className="form-group">
-              <label>Agregar tizada </label>
-              <Button className="botonIcons" onClick={handleAddTizada}>
-                <i className="material-icons">add</i>
-              </Button>
+            <Col md="3">
+              <Row form>
+                <Col md="2">
+                  <Button
+                    className="botonIconsTizada"
+                    onClick={handleAddTizada}
+                  >
+                    <i className="material-icons">add</i>
+                  </Button>
+                </Col>
+                <Col md="10">
+                  <label>Agregar tizada </label>
+                </Col>
+              </Row>
+            </Col>
+            <Col md="3">
+              <Row form>
+                <Col md="2">
+                  <FormCheckbox
+                    className="botonCheckBox"
+                    // onClick={handleAddTizada}
+                  ></FormCheckbox>
+                </Col>
+                <Col md="10">
+                  <label>¿Se utilizó la misma tela?</label>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </CardHeader>
@@ -494,6 +486,7 @@ export default function Corte() {
               <ConjuntoRemito
                 readOnly={true}
                 multiRemitos={multiRemitos}
+                multiTextilera={multiTextilera}
                 handleOrginal={handleOrginal}
                 handleAuto={handleAuto}
                 key={index}
@@ -510,6 +503,9 @@ export default function Corte() {
         </ListGroup>
         {corte.tizada.map((tizada, index) => (
           <FormularioCorte
+            handleDeleteTalles={handleDeleteTalles}
+            readOnly={false}
+            multiTela={multiTela}
             key={index}
             index={index}
             handleDeleteTizada={handleDeleteTizada}

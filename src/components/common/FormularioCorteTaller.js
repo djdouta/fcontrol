@@ -12,6 +12,7 @@ import {
 } from "shards-react";
 import TableTalles from "./TableTalles";
 import Encimado from "./Encimado";
+import ArrayTalles from "./ArrayTalles";
 
 export default function Corte(props) {
   const [ocultar, setOcultar] = useState(true);
@@ -33,7 +34,7 @@ export default function Corte(props) {
             <ListGroup flush>
               <ListGroupItem className="px-3">
                 <Row form>
-                  <Col md="10" className="form-group">
+                  <Col md="12" className="form-group">
                     <Row form>
                       <Col md="3" className="form-group">
                         <label>Articulo</label>
@@ -187,21 +188,55 @@ export default function Corte(props) {
                         </Col>
                       )}
                     </Row>
-                    {props.tizada.encimados.map((e, i) => (
-                      <Encimado
-                        handleAuto={props.handleAuto}
-                        key={i}
-                        index={props.index}
-                        encimadoIndex={i}
-                        encimado={e}
-                        handleEncimado={props.handleEncimado}
-                        handleDeleteEncimado={props.handleDeleteEncimado}
-                        readOnly={props.readOnly}
-                        original={props.original}
-                        handleOpcionChange={props.handleOpcionChange}
-                        conjunto={props.conjunto}
-                      />
-                    ))}
+                    <Row form>
+                      <Col md="9" className="form-group">
+                        {props.tizada.encimados.map((e, i) => (
+                          <Encimado
+                            multiTela={props.multiTela}
+                            handleAuto={props.handleAuto}
+                            key={i}
+                            index={props.index}
+                            encimadoIndex={i}
+                            encimado={e}
+                            handleEncimado={props.handleEncimado}
+                            handleDeleteEncimado={props.handleDeleteEncimado}
+                            readOnly={props.readOnly}
+                            original={props.original}
+                            handleOpcionChange={props.handleOpcionChange}
+                            conjunto={props.conjunto}
+                            talles={props.tizada.talles}
+                          />
+                        ))}
+                      </Col>
+                      <Col md="3" className="form-group">
+                        <Row form>
+                          <Col md="12" className="form-group, CenterText">
+                            <label>Talles</label>
+                            <TableTalles
+                              index={props.index}
+                              // talles={props.tizada.talles}
+                              handleTalles={props.handleTalles}
+                            />
+                          </Col>
+                        </Row>
+                        <Row form>
+                          <Col md="12" className="form-group, CenterText">
+                            <label>Talles seleccionados</label>
+                            <div>
+                              {props.tizada.talles.map((talle, index) => (
+                                <ArrayTalles talle={talle} key={index} />
+                              ))}
+                            </div>
+                            <Button
+                              onClick={props.handleDeleteTalles}
+                              data-index={props.index}
+                            >
+                              {"<"}
+                            </Button>
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
                     {props.readOnly === true || props.index === 0 ? null : (
                       <Button
                         onClick={props.handleDeleteTizada}
@@ -210,18 +245,6 @@ export default function Corte(props) {
                         Eliminar tizada
                       </Button>
                     )}
-                  </Col>
-                  <Col md="2" className="form-group">
-                    <Row form>
-                      <Col md="12" className="form-group, CenterText">
-                        <label>Talles</label>
-                        <TableTalles
-                          index={props.index}
-                          talles={props.tizada.talles}
-                          handleTalles={props.handleTalles}
-                        />
-                      </Col>
-                    </Row>
                   </Col>
                 </Row>
               </ListGroupItem>
